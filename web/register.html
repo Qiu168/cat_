@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>用户注册</title>
+</head>
+<body>
+<h1>用户注册</h1>
+<form>
+  <label for="username">用户名：</label>
+  <input type="text" id="username" name="username" required><br><br>
+  <label for="password">密码：</label>
+  <input type="password" id="password" name="password" required><br><br>
+  <label for="repassword">确认密码：</label>
+  <input type="password" id="repassword" name="repassword" required><br><br>
+  <label for="studentNumber">学号：</label>
+  <input type="text" id="studentNumber" name="studentNumber" required><br><br>
+  <label for="name">姓名：</label>
+  <input type="text" id="name" name="name" required><br><br>
+  <label for="electromobileModel">车型：</label>
+  <input type="text" id="electromobileModel" name="electromobileModel"><br><br>
+  <label for="electromobileNumber">车牌号：</label>
+  <input type="text" id="electromobileNumber" name="electromobileNumber"><br><br>
+  <button type="button" onclick="register()">注册</button>
+</form>
+<script src="js/axios.js"></script>
+<script>
+  function register() {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+    const repassword = document.getElementById("repassword").value;
+    const studentNumber = document.getElementById("studentNumber").value;
+    const name = document.getElementById("name").value;
+    const electromobileModel = document.getElementById("electromobileModel").value;
+    const electromobileNumber = document.getElementById("electromobileNumber").value;
+    if (password !== repassword) {
+      alert("两次输入的密码不一致");
+      return;
+    }
+    axios.post("/register", {
+      username: username,
+      password: password,
+      studentNumber: studentNumber,
+      name: name,
+      electromobileModel: electromobileModel,
+      electromobileNumber: electromobileNumber
+    }).then(function (response) {
+      alert("注册成功");
+      window.location.href = "/login.html";
+    }).catch(function (error) {
+      alert("注册失败");
+      console.log(error);
+    });
+  }
+</script>
+</body>
+</html>
