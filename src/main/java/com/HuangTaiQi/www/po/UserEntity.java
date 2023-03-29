@@ -1,15 +1,16 @@
 package com.HuangTaiQi.www.po;
 
 public class UserEntity {
-    private int id;
+    private Integer id;
     private String studentNumber;
     private String name;
     private String username;
     private String password;
     private String electromobileModel;
     private String electromobileNumber;
-    private Integer state;
+    private Boolean state;
     private Integer authorityId;
+
 
     public Integer getAuthorityId() {
         return authorityId;
@@ -19,19 +20,19 @@ public class UserEntity {
         this.authorityId = authorityId;
     }
 
-    public Integer getState() {
+    public Boolean getState() {
         return state;
     }
 
-    public void setState(Integer state) {
+    public void setState(Boolean state) {
         this.state = state;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
