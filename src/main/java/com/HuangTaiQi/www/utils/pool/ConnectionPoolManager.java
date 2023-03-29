@@ -1,4 +1,4 @@
-package com.HuangTaiQi.www.utils;
+package com.HuangTaiQi.www.utils.pool;
 
 import com.HuangTaiQi.www.config.DataSourceConfig;
 
@@ -16,7 +16,7 @@ public class ConnectionPoolManager {
 
     private static DataSourceConfig config = new DataSourceConfig();
     private static ImplConnectionPool connectionPool;
-    private static Logger logger = Logger.getLogger("com.HuangTaiQi.www.utils.ConnectionPoolManager");
+    private static Logger logger = Logger.getLogger("com.HuangTaiQi.www.pool.ConnectionPoolManager");
     static {
         try {
             connectionPool = new ImplConnectionPool(config);
@@ -29,10 +29,10 @@ public class ConnectionPoolManager {
         return connectionPool.getPoolEntry().getConn();
     }
 
-    public static void closeConnection(Connection connection) throws SQLException {
+    public static void closeConnection(Connection connection)  {
         connectionPool.close(connection);
     }
 
-    public static void closeAll(Connection connection, Statement statement, ResultSet resultSet) throws SQLException {connectionPool.closeAll(connection,statement,resultSet);}
+    public static void closeAll(Connection connection, Statement statement, ResultSet resultSet) {connectionPool.closeAll(connection,statement,resultSet);}
 
 }

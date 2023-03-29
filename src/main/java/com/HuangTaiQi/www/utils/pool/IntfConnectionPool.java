@@ -1,4 +1,4 @@
-package com.HuangTaiQi.www.utils;
+package com.HuangTaiQi.www.utils.pool;
 
 import java.sql.Connection;
 import java.sql.SQLException;

@@ -1,9 +1,9 @@
-package com.HuangTaiQi.www.utils;
+package com.HuangTaiQi.www.utils.pool;
 
 
 
 import com.HuangTaiQi.www.config.DataSourceConfig;
-import com.HuangTaiQi.www.po.PoolEntry;
+
 import java.sql.*;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -16,7 +16,7 @@ import java.util.logging.Logger;
  * @author 14629
  */
 public class ImplConnectionPool implements IntfConnectionPool {
-    private static Logger logger = Logger.getLogger("com.HuangTaiQi.www.utils.ImplConnectionPool");
+    private static Logger logger = Logger.getLogger("com.HuangTaiQi.www.pool.ImplConnectionPool");
     private DataSourceConfig config;
     private AtomicInteger currentActive =new AtomicInteger(0);
     private Vector<Connection> freePools=new Vector<>();
@@ -67,30 +67,46 @@ public class ImplConnectionPool implements IntfConnectionPool {
 
 
     @Override
-    public synchronized void close(Connection conn) throws SQLException {
+    public synchronized void close(Connection conn){
         for ( int i = 0; i < usePools.size();i++ ){
             if(usePools.get(i).getConn()==conn){
                 usePools.remove(i);
                 if(currentActive.get()>Integer.parseInt(config.getInitSize())){
-                    conn.close();
+                    try {
+                        conn.close();
+                    } catch (SQLException e) {
+                        logger.log(Level.SEVERE,"connection:"+conn+"close失败");
+                    }
                     currentActive.decrementAndGet();
                     logger.info("动态缩小了线程池！释放了连接:"+conn);
                 }
                 break;
             }
         }
-        if (!conn.isClosed() && conn != null ){
-            freePools.add(conn);
+        try {
+            if (!conn.isClosed() && conn != null ){
+                freePools.add(conn);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE,"e="+e.getMessage());
         }
         logger.info("回收了一个连接:"+conn+",空闲连接数为:"+freePools.size()+",在用线程数为:"+usePools.size());
         notifyAll();
     }
-    public synchronized void closeAll(Connection conn, Statement stmt, ResultSet rs) throws SQLException {
+    public synchronized void closeAll(Connection conn, Statement stmt, ResultSet rs) {
         if(rs!=null) {
-            rs.close();
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
         if(stmt!=null) {
-            stmt.close();
+            try {
+                stmt.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
         close(conn);
     }

@@ -1,4 +1,4 @@
-package com.HuangTaiQi.www.utils;
+package com.HuangTaiQi.www.utils.code;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
