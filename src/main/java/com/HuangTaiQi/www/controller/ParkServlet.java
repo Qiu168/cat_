@@ -68,4 +68,20 @@ public class ParkServlet extends BaseServlet{
             handleException(ParkServlet.class,e);
         }
     }
+
+    public void addParkingSpot(int lotId) {
+        try {
+            parkService.addParkingSpot(lotId);
+        } catch (SQLException | InterruptedException e) {
+            handleException(ParkServlet.class,e);
+        }
+    }
+
+    public void setSpotStateByState(Integer userId, int state) {
+        try {
+            parkService.setSpotStateByState(userId,state);
+        } catch (SQLException | InterruptedException e) {
+            handleException(ParkServlet.class,e);
+        }
+    }
 }
