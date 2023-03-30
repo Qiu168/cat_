@@ -43,7 +43,7 @@ public class ChargeDao extends BaseDao{
     }
 
     public List<ChargingPileEntity> getChargingPilesByStationId(int stationId) throws Exception {
-        String sql=new SQLBuilder("chargingstation").select("*").where("station_id").buildSelect();
+        String sql=new SQLBuilder("chargingpile").select("*").where("station_id").buildSelect();
         return selectByParams(sql, ChargingPileEntity.class,stationId);
     }
 

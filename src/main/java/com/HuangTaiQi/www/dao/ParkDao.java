@@ -25,7 +25,7 @@ public class ParkDao extends BaseDao{
     }
 
     public List<ParkingSpotEntity> getParkSpots(int lotId) throws Exception {
-        String sql="select * from parkinglot where location_id=?";
+        String sql="select * from parkingspot where location_id=?";
         return selectByParams(sql, ParkingSpotEntity.class,lotId);
     }
 
@@ -36,7 +36,7 @@ public class ParkDao extends BaseDao{
 
     public void setSpotState(int spotId, int state) throws SQLException, InterruptedException {
         String sql="update parkingspot set state=? where id=?";
-        updateCommon(sql,spotId,state);
+        updateCommon(sql,state,spotId);
     }
 
     public void deleteSpotByLocationId(int lotId) throws SQLException, InterruptedException {
@@ -52,5 +52,15 @@ public class ParkDao extends BaseDao{
     public void alterLot(int lotId, String location, String name) throws SQLException, InterruptedException {
         String sql="update parkinglot set location=?,name=? where id=?";
         updateCommon(sql,location,name,lotId);
+    }
+
+    public void addSpot(int lotId) throws SQLException, InterruptedException {
+        String sql="insert into parkingspot(location_id) values(?)";
+        updateCommon(sql,lotId);
+    }
+
+    public void setSpotStateByState(Integer userId, int state) throws SQLException, InterruptedException {
+        String sql="update parkingspot set state=? where state=?";
+        updateCommon(sql,state,userId);
     }
 }
