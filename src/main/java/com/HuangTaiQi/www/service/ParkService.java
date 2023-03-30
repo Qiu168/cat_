@@ -89,4 +89,33 @@ public class ParkService {
         transactionManager.commit();
         ConnectionPoolManager.closeConnection(connection);
     }
+
+    public void addParkingSpot(int lotId) throws SQLException, InterruptedException {
+        connection=ConnectionPoolManager.getConnection();
+        TransactionManager transactionManager=new TransactionManager(connection);
+        transactionManager.beginTransaction();
+        ParkDao parkDao = new ParkDao(connection);
+        try {
+            parkDao.addSpot(lotId);
+        } catch (SQLException | InterruptedException e) {
+            transactionManager.commit();
+            throw new RuntimeException(e);
+        }
+        transactionManager.commit();
+        ConnectionPoolManager.closeConnection(connection);
+    }
+
+    public void setSpotStateByState(Integer userId, int state) throws SQLException, InterruptedException {
+        connection=ConnectionPoolManager.getConnection();
+        TransactionManager transactionManager=new TransactionManager(connection);
+        transactionManager.beginTransaction();
+        try {
+            new ParkDao(connection).setSpotStateByState(userId,state);
+        } catch (SQLException | InterruptedException e) {
+            transactionManager.commit();
+            throw new RuntimeException(e);
+        }
+        transactionManager.commit();
+        ConnectionPoolManager.closeConnection(connection);
+    }
 }

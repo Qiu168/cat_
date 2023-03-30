@@ -2,8 +2,8 @@ package com.HuangTaiQi.www.service;
 
 import com.HuangTaiQi.www.dao.UserDao;
 import com.HuangTaiQi.www.po.UserEntity;
-import com.HuangTaiQi.www.utils.ConnectionPoolManager;
-import com.HuangTaiQi.www.utils.Md5Utils;
+import com.HuangTaiQi.www.utils.pool.ConnectionPoolManager;
+import com.HuangTaiQi.www.utils.code.Md5Utils;
 import com.HuangTaiQi.www.utils.TransactionManager;
 
 import java.security.NoSuchAlgorithmException;
@@ -24,7 +24,7 @@ public class UserService {
         user.setPassword(Md5Utils.encode(password));
         user.setUsername(username);
         user.setStudentNumber(studentNumber);
-        user.setState(0);
+        user.setState(false);
         user.setAuthorityId(1);
         connection= ConnectionPoolManager.getConnection();
         TransactionManager transactionManager=new TransactionManager(connection);
@@ -52,7 +52,7 @@ public class UserService {
         connection=ConnectionPoolManager.getConnection();
         UserEntity userByUsernameAndPassword = new UserDao(connection).getUserByUsernameAndPassword(username, Md5Utils.encode(password));
         ConnectionPoolManager.closeConnection(connection);
-        if( userByUsernameAndPassword != null && userByUsernameAndPassword.getState() != 0){
+        if( userByUsernameAndPassword != null && userByUsernameAndPassword.getState()){
             return userByUsernameAndPassword;
         }else {
             return null;
@@ -93,6 +93,20 @@ public class UserService {
         transactionManager.beginTransaction();
         try {
             new UserDao(connection).deleteUserById(id);
+        } catch (SQLException | InterruptedException e) {
+            transactionManager.commit();
+            throw new RuntimeException(e);
+        }
+        transactionManager.commit();
+        ConnectionPoolManager.closeConnection(connection);
+    }
+
+    public void setAuthority(int id, int authorityId) throws SQLException, InterruptedException {
+        connection=ConnectionPoolManager.getConnection();
+        TransactionManager transactionManager=new TransactionManager(connection);
+        transactionManager.beginTransaction();
+        try {
+            new UserDao(connection).setUserAuthorityId(id,authorityId);
         } catch (SQLException | InterruptedException e) {
             transactionManager.commit();
             throw new RuntimeException(e);

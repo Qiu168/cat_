@@ -2,10 +2,11 @@ package com.HuangTaiQi.www.service;
 
 import com.HuangTaiQi.www.dao.AdminDao;
 import com.HuangTaiQi.www.po.AdminEntity;
-import com.HuangTaiQi.www.utils.ConnectionPoolManager;
-import com.HuangTaiQi.www.utils.Md5Utils;
+import com.HuangTaiQi.www.utils.pool.ConnectionPoolManager;
+import com.HuangTaiQi.www.utils.code.Md5Utils;
 import com.HuangTaiQi.www.utils.TransactionManager;
 
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -31,7 +32,6 @@ public class AdminService {
                 username.append(random.nextInt(10));
             }
             // 使用 Map.putIfAbsent() 方法检查用户名是否已经存在
-
         } while (map.putIfAbsent(username.toString(), UUID.randomUUID().toString()) != null || adminDao.selectByUsername(username.toString()) != null);
         // 将生成的用户名和密码记录到数据库中
         AdminEntity admin = new AdminEntity(username.toString(), map.get(username.toString()));
@@ -53,5 +53,24 @@ public class AdminService {
         AdminEntity admin = new AdminDao(connection).getAdminByUsernameAndPassword(username, Md5Utils.encode(password));
         ConnectionPoolManager.closeConnection(connection);
         return admin;
+    }
+
+    public boolean changePassword(Integer id, String origin, String next) throws NoSuchAlgorithmException, InterruptedException, SQLException {
+        connection=ConnectionPoolManager.getConnection();
+        TransactionManager transactionManager=new TransactionManager(connection);
+        transactionManager.beginTransaction();
+        if(origin.equals(Md5Utils.encode(next))){
+            try {
+                new AdminDao(connection).changePassword(id,next);
+            } catch (SQLException e) {
+                transactionManager.rollback();
+                throw new RuntimeException(e);
+            }
+        }else{
+            return false;
+        }
+        transactionManager.commit();
+        ConnectionPoolManager.closeConnection(connection);
+        return true;
     }
 }
