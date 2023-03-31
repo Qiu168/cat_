@@ -17,6 +17,7 @@ public class DataSourceConfig {
     private String delay;
     private String period;
     private String timeout;
+    private String numConnectionsToCreate;
 
     /**
      * 构造方法，使用配置文件和反射，将成员变量赋值
@@ -39,6 +40,14 @@ public class DataSourceConfig {
         char[] chars = fieldName.toCharArray();
         chars[0] -= 32;
         return "set" + new String(chars);
+    }
+
+    public String getNumConnectionsToCreate() {
+        return numConnectionsToCreate;
+    }
+
+    public void setNumConnectionsToCreate(String numConnectionsToCreate) {
+        this.numConnectionsToCreate = numConnectionsToCreate;
     }
 
     public String getDriver() {

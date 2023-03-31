@@ -43,6 +43,13 @@ public class ImplConnectionPool implements IntfConnectionPool {
         logger.info("new一个新的连接："+conn);
         return conn;
     }
+    private void createConnections() throws SQLException {
+        for (int i = 0; i < Integer.parseInt(config.getNumConnectionsToCreate()); i++) {
+            Connection conn = createConnection();
+            freePools.add(conn);
+            currentActive.incrementAndGet();
+        }
+    }
     public synchronized PoolEntry getPoolEntry() throws InterruptedException, SQLException {
         Connection conn;
         if (!freePools.isEmpty()) {
@@ -50,7 +57,9 @@ public class ImplConnectionPool implements IntfConnectionPool {
             freePools.remove(0);
         } else {
             if (currentActive.get() < Integer.parseInt(config.getMaxSize())) {
-                conn = createConnection();
+                createConnections();
+                conn = freePools.get(0);
+                freePools.remove(0);
             } else {
                 logger.info(Thread.currentThread().getName() + ",连接池最大连接数为:" + config.getMaxSize() + "已经满了，需要等待...");
                 wait(1000);
