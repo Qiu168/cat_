@@ -15,9 +15,13 @@ public class MenuView {
     private final UserView userView=new UserView();
     public void studentMenu(UserEntity user){
         LocalDateTime now = LocalDateTime.now();
-        System.out.println("0立刻充电,1预约充电,2停车,3离开停车场，4修改电动车型号,5退出");
+        System.out.println("0立刻充电,1预约充电,2停车,3离开停车场，4修改电动车型号,5评论充电桩,6退出");
         switch (scanner.nextInt()){
             case 0:
+                if(user.getState()==UserEntity.CHARGING){
+                    System.out.println("您的电动车以在充电");
+                    break;
+                }
                 //立刻充电
                 if(user.getAuthorityId()==AuthorityEntity.PARK||user.getAuthorityId()==AuthorityEntity.CANT_DO_EVERYTHING){
                     System.out.println("对不起您没有权限充电");
@@ -27,6 +31,10 @@ public class MenuView {
                 chargeView.chargeAtTime(user, now.getHour(),now.getMinute());
                 break;
             case 1:
+                if(user.getState()==UserEntity.CHARGING){
+                    System.out.println("您的电动车以在充电");
+                    break;
+                }
                 //预约充电
                 if(user.getAuthorityId()==AuthorityEntity.PARK||user.getAuthorityId()==AuthorityEntity.CANT_DO_EVERYTHING){
                     System.out.println("对不起您没有权限充电");
@@ -51,11 +59,15 @@ public class MenuView {
                 }
                 parkView.park(user);
                 break;
-            case 3:
+            case 4:
                 //修改电动车型号
                 userView.modifyElectromobile(user.getId());
-                break;
-            case 4:
+                return;
+            case 3:
+                if(user.getState()!=UserEntity.PARKING){
+                    System.out.println("您还未停车");
+                    break;
+                }
                 //离开停车场
                 if(user.getAuthorityId()==AuthorityEntity.CHARGE||user.getAuthorityId()==AuthorityEntity.CANT_DO_EVERYTHING){
                     System.out.println("对不起您没有权限停车");
@@ -64,6 +76,9 @@ public class MenuView {
                 parkView.left(user);
                 break;
             case 5:
+                chargeView.comment(user);
+                break;
+            case 6:
                 return;
             default:
                 logger.log(Level.WARNING,"UNDEFINE INPUT ");
@@ -80,7 +95,7 @@ public class MenuView {
     }
 
     public void adminMenu(AdminEntity admin){
-        System.out.println("1审批用户，2查看已审批的用户，3查看充电，4查看停车，5查看报表，6改密码");
+        System.out.println("0退出，1审批用户，2查看已审批的用户，3查看充电，4查看停车，5查看报表，6改密码");
         switch (scanner.nextInt()){
             case 1:
                 //审批用户
@@ -100,13 +115,17 @@ public class MenuView {
                 break;
             case 5:
                 //查看报表
+                adminView.showReport();
                 break;
             case 6:
                 adminView.changePassword(admin);
                 break;
+            case 0:
+                return;
             default:
                 logger.log(Level.WARNING,"UNDEFINE INPUT ");
         }
+        adminMenu(admin);
     }
 
 }

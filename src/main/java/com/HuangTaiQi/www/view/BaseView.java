@@ -2,6 +2,10 @@ package com.HuangTaiQi.www.view;
 
 import com.HuangTaiQi.www.po.*;
 
+/**
+ * 提供一些方法展示类
+ * @author 14629
+ */
 public class BaseView {
     public static String showUser(UserEntity user) {
         StringBuilder stringBuilder=new StringBuilder();

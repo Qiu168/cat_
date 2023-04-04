@@ -82,7 +82,7 @@ public class ParkView {
             System.out.println("暂无停车场");
         }else {
             for (ParkingLotEntity parkingLotEntity : parkingLotEntities) {
-                System.out.println(parkingLotEntity);
+                System.out.println(BaseView.showParkingLotEntity(parkingLotEntity));
                 lotIds.add(parkingLotEntity.getId());
             }
             System.out.println("1新增停车场，2修改停车场，3删除停车场，4查看停车场内的停车位");
@@ -121,7 +121,7 @@ public class ParkView {
             }else{
                 System.out.println("下列是此停车场的所有停车位");
                 for (ParkingSpotEntity parkingSpotEntity : parkingSpotEntities) {
-                    System.out.println(parkingSpotEntity);
+                    System.out.println(BaseView.showParkingSpotEntity(parkingSpotEntity));
                     spotIds.add(parkingSpotEntity.getId());
                 }
                 System.out.println("输入0退出，1删除停车位，2修改停车位状态");

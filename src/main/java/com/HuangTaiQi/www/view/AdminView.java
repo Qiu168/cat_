@@ -12,17 +12,27 @@ import java.util.Scanner;
 
 public class AdminView {
     private final Scanner scanner=new Scanner(System.in);
+
+    /**
+     * 改密码
+     * @param admin admin对象
+     */
     public void changePassword(AdminEntity admin) {
         System.out.println("请输入原密码");
         String origin=scanner.next();
         System.out.println("请输入更改之后的密码");
-        boolean changePassword = new AdminServlet().ChangePassword(admin.getId(), origin, scanner.next());
+        boolean changePassword = new AdminServlet().ChangePassword(admin.getUsername(), origin, scanner.next());
         if(changePassword){
             System.out.println("更改成功");
         }else {
             System.out.println("原密码错误");
         }
     }
+
+    /**
+     * 审核
+     * @param admin admin对象
+     */
     public void audit(AdminEntity admin){
         UserServlet userServlet = new UserServlet();
         List<UserEntity> userEntities = userServlet.showAuditUser();
@@ -31,7 +41,7 @@ public class AdminView {
             return;
         }
         for (UserEntity user : userEntities) {
-            System.out.println(user);
+            System.out.println(BaseView.showUser(user));
         }
         //显示出state=0的用户信息
         while(true){
@@ -48,5 +58,19 @@ public class AdminView {
             }
         }
         //通过id更改state
+    }
+
+
+    /**
+     * 看报告
+     */
+    public void showReport() {
+        System.out.println("请输入你想查看的报告的年份。例：1999");
+        int year=scanner.nextInt();
+        System.out.println("请输入你想查看的报告的月份。例：5");
+        int month=scanner.nextInt();
+        System.out.println("请输入你想查看的报告的日期。例：28");
+        int day=scanner.nextInt();
+        new AdminServlet().showReport(year,month,day);
     }
 }

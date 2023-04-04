@@ -1,10 +1,8 @@
 package com.HuangTaiQi.www.view;
 
 import com.HuangTaiQi.www.controller.ChargeServlet;
-import com.HuangTaiQi.www.po.ChargingPileBean;
-import com.HuangTaiQi.www.po.ChargingPileEntity;
-import com.HuangTaiQi.www.po.ChargingStationEntity;
-import com.HuangTaiQi.www.po.UserEntity;
+import com.HuangTaiQi.www.controller.CommentServlet;
+import com.HuangTaiQi.www.po.*;
 import com.HuangTaiQi.www.utils.TextLog;
 
 import java.time.LocalDateTime;
@@ -12,9 +10,19 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * @author 14629
+ */
 public class ChargeView {
     private final Logger logger=Logger.getLogger(MenuView.class.getName());
     private final Scanner scanner=new Scanner(System.in);
+
+    /**
+     * 在某一时间开始充电
+     * @param user 用户
+     * @param hour 开始的小时
+     * @param minute 开始的分钟
+     */
     public void chargeAtTime(UserEntity user, int hour, int minute) {
         ChargeServlet chargeServlet=new ChargeServlet();
         List<ChargingStationEntity> chargingStationEntities = chargeServlet.showChargingStation();
@@ -34,17 +42,21 @@ public class ChargeView {
                 System.out.println("此充电站的开放时间为"+chargingStation.getOpen()+"~"+chargingStation.getClose());
                 return;
             }
-            System.out.println("下面是此充电站当前时间所有可用的充电桩");
             List<ChargingPileBean> chargingPileBeans = chargeServlet.showFreePile(stationId, hour);
+            if(chargingPileBeans.isEmpty()){
+                System.out.println("充电站此时没有空闲的充电桩");
+                return;
+            }
+            System.out.println("下面是此充电站当前时间所有可用的充电桩");
             for (ChargingPileBean chargingPileBean : chargingPileBeans) {
                 System.out.println(chargingPileBean.toMyString(minute));
                 freePiles.put(chargingPileBean.getId(),chargingPileBean);
             }
             System.out.println("请输入想要使用的充电桩id");
             int pileId=scanner.nextInt();
-            System.out.println("请输入你想用到几点？(24小时制)");
+            System.out.println("请输入你想用多久？（小时）");
             int useTime=scanner.nextInt();
-            if(freePiles.containsKey(pileId)&&freePiles.get(pileId).getFreeTime()>=useTime){
+            if(freePiles.containsKey(pileId)&&freePiles.get(pileId).getFreeTime()>=useTime&&useTime!=0){
                 chargeServlet.usePile(user.getId(),freePiles.get(pileId),hour,useTime);
                 System.out.println("请在指定时间内完成充电");
                 LocalDateTime now = LocalDateTime.now();
@@ -57,10 +69,12 @@ public class ChargeView {
         }else {
             System.out.println("输入错误");
         }
-        //显示出目前可以用的充电桩.
-        //选择充电桩。显示出此充电桩的预约信息。
-        //设置充电时长，开始充电。
     }
+
+    /**
+     * 展示充电站充电桩给管理员
+     * 修改新增删除
+     */
     public void showCharge(){
         ChargeServlet chargeServlet = new ChargeServlet();
         List<Integer> stationIds = showChargingStation(chargeServlet);
@@ -84,13 +98,15 @@ public class ChargeView {
             default:
                 logger.log(Level.WARNING,"UNDEFINE INPUT ");
         }
-        //修改充电站，查看充电桩内的充电桩
 
-        //修改充电站信息，早上开启时间？，晚上关闭时间？
-        //查看充电桩 增加减少充电桩，
     }
 
-    public List<Integer> showChargingStation(ChargeServlet chargeServlet){
+    /**
+     * 查询充电站
+     * @param chargeServlet servlet
+     * @return 充电站集合
+     */
+    private List<Integer> showChargingStation(ChargeServlet chargeServlet){
         List<Integer> stationIds =new ArrayList<>();
         //查看所有充电站
         for (ChargingStationEntity chargingStation : chargeServlet.showChargingStation()) {
@@ -99,6 +115,12 @@ public class ChargeView {
         }
         return stationIds;
     }
+
+    /**
+     * 给管理员添加充电桩
+     * @param stationIds 充电站的id
+     * @param chargeServlet servlet
+     */
     public void addPile(List<Integer> stationIds, ChargeServlet chargeServlet) {
         System.out.println("请输入想要添加到的充电站的id,0退出");
         int stationId = scanner.nextInt();
@@ -113,6 +135,11 @@ public class ChargeView {
         }
     }
 
+    /**
+     * 展示充电站里的充电桩
+     * @param stationIds 充电站id
+     * @param chargeServlet servlet
+     */
     public void showChargingPile(List<Integer> stationIds, ChargeServlet chargeServlet) {
         List<Integer> pileIds =new ArrayList<>();
         System.out.println("请输入想查看的充电站id");
@@ -150,6 +177,10 @@ public class ChargeView {
         }
     }
 
+    /**
+     * 新增充电站
+     * @param chargeServlet servlet
+     */
     public void addStation(ChargeServlet chargeServlet) {
         System.out.println("你确定要添加充电站吗？输入1添加");
         if(scanner.nextInt()==1){
@@ -167,6 +198,11 @@ public class ChargeView {
         }
     }
 
+    /**
+     * 删除充电站
+     * @param stationIds 充电站id
+     * @param chargeServlet servlet
+     */
     public void deleteStation(List<Integer> stationIds, ChargeServlet chargeServlet) {
         System.out.println("删除充电站将会把在此充电站的所有充电桩删除！是否继续？0退出，1继续");
         if(scanner.nextInt()==1){
@@ -181,6 +217,11 @@ public class ChargeView {
         }
     }
 
+    /**
+     * 修改充电站
+     * @param stationIds 充电站id
+     * @param chargeServlet servlet
+     */
     public void alterStation(List<Integer> stationIds, ChargeServlet chargeServlet) {
         System.out.println("请输入想要修改的充电站id");
         int stationId = scanner.nextInt();
@@ -199,4 +240,38 @@ public class ChargeView {
         }
     }
 
+    private final int COMMENT_NUM=5;
+
+    /**
+     * 展示新增Comment
+     * @param user user
+     */
+    public void comment(UserEntity user) {
+        ChargeServlet chargeServlet = new ChargeServlet();
+        CommentServlet commentServlet = new CommentServlet();
+        System.out.println("你想查看/评论几号充电桩？");
+        int pileId= scanner.nextInt();
+        ChargingPileEntity pileById = chargeServlet.getPileById(pileId);
+        if(pileById==null){
+            System.out.println("此充电桩不存在");
+        }else{
+            System.out.println(BaseView.showPile(pileById));
+            List<CommentEntity> comments =commentServlet.getComments(pileId);
+            if(comments==null){
+                System.out.println("此充电桩暂无评论");
+            }else{
+                System.out.println("\ncomments:");
+                for (int i = comments.size() - 1,j=1; i >= 0&&j<=COMMENT_NUM; i--,j++) {
+                    System.out.println(j+". "+BaseView.showComment(comments.get(i)));
+                }
+            }
+            System.out.println("0退出，1我也要评论");
+            int intPut=scanner.nextInt();
+            if(intPut==1){
+                String comm=scanner.next();
+                commentServlet.addComment(pileId,user.getUsername()+" : "+comm);
+                System.out.println("添加成功");
+            }
+        }
+    }
 }

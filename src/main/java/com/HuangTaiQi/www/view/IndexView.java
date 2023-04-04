@@ -4,12 +4,16 @@ import com.HuangTaiQi.www.controller.AdminServlet;
 import com.HuangTaiQi.www.controller.UserServlet;
 import com.HuangTaiQi.www.po.AdminEntity;
 import com.HuangTaiQi.www.po.UserEntity;
+import com.HuangTaiQi.www.utils.regex.CommonRegex;
 
 import java.util.Scanner;
-import java.util.logging.Logger;
 
+
+/**
+ * 初始页面
+ * @author 14629
+ */
 public class IndexView {
-    private final Logger logger=Logger.getLogger(IndexView.class.getName());
     private final Scanner scanner=new Scanner(System.in);
     public void begin(){
         System.out.println("欢迎来到校园电动车管理系统");
@@ -28,18 +32,22 @@ public class IndexView {
         }
     }
     private void register(){
-        System.out.println("请输入账号");
+        System.out.println("请输入账号，长度在6~18之间，只能包含字符、数字和下划线。");
         String username = scanner.next();
-        System.out.println("请输入密码");
+        System.out.println("请输入密码，长度在6~18之间。");
         String password = scanner.next();
-        System.out.println("请输入真实姓名");
+        System.out.println("请输入真实姓名，只能输入中文");
         String name = scanner.next();
         System.out.println("请输入学号");
         String studentNumber = scanner.next();
         System.out.println("请输入电动车型号");
         String electromobileModel = scanner.next();
-        System.out.println("请输入电动车牌号");
+        System.out.println("请输入电动车牌号，长度为6 只能包含字母、数字。");
         String electromobileNumber = scanner.next();
+        if(!(CommonRegex.check(CommonRegex.electromobileNumberRegex,electromobileNumber)&&CommonRegex.check(CommonRegex.usernameRegex,username)&&CommonRegex.check(CommonRegex.nameRegex,name))){
+            System.out.println("输入不规范");
+            return;
+        }
         //传数据给后端
         boolean register = new UserServlet().register(username, password, name, studentNumber, electromobileModel, electromobileNumber);
         if(register){
