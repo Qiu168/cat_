@@ -1,12 +1,11 @@
 package com.HuangTaiQi.www.service.impl;
 
-import com.HuangTaiQi.www.dao.ChargeDao;
+import com.HuangTaiQi.www.dao.impl.ChargeDaoImpl;
 import com.HuangTaiQi.www.po.ChargingPileBean;
 import com.HuangTaiQi.www.po.ChargingPileEntity;
 import com.HuangTaiQi.www.po.ChargingStationEntity;
 import com.HuangTaiQi.www.service.ChargeService;
 import com.HuangTaiQi.www.utils.DBUtil;
-
 
 
 import java.sql.SQLException;
@@ -26,7 +25,7 @@ public class ChargeServiceImpl implements ChargeService {
      * @throws Exception 异常
      */
     public List<ChargingStationEntity> getChargingStations() throws Exception {
-        List<ChargingStationEntity> chargingStations = new ChargeDao().getChargingStations();
+        List<ChargingStationEntity> chargingStations = new ChargeDaoImpl().getChargingStations();
         DBUtil.close();
         return chargingStations;
     }
@@ -43,13 +42,14 @@ public class ChargeServiceImpl implements ChargeService {
     public void addChargingStation(String location, String name, int open, int close) throws SQLException, InterruptedException {
         DBUtil.beginTransaction();
         try {
-            new ChargeDao().addChargingStation(location,name,open,close);
+            new ChargeDaoImpl().addChargingStation(location,name,open,close);
         } catch (SQLException | InterruptedException e) {
             DBUtil.rollbackTransaction();
             throw new RuntimeException(e);
         }
         DBUtil.commitTransaction();
         DBUtil.close();
+
     }
 
     /**
@@ -65,13 +65,14 @@ public class ChargeServiceImpl implements ChargeService {
     public void updateChargingStation(int stationId, String location, String name, int open, int close) throws SQLException, InterruptedException {
         DBUtil.beginTransaction();
         try {
-            new ChargeDao().updateChargingStation(stationId,location,name,open,close);
+            new ChargeDaoImpl().updateChargingStation(stationId,location,name,open,close);
         } catch (SQLException | InterruptedException e) {
             DBUtil.rollbackTransaction();
             throw new RuntimeException(e);
         }
         DBUtil.commitTransaction();
         DBUtil.close();
+
     }
 
     /**
@@ -82,10 +83,10 @@ public class ChargeServiceImpl implements ChargeService {
      */
     public void deleteChargingStationById(int stationId) throws SQLException, InterruptedException {
         DBUtil.beginTransaction();
-        ChargeDao chargeDao = new ChargeDao();
+        ChargeDaoImpl chargeDaoImpl = new ChargeDaoImpl();
         try {
-            chargeDao.deleteChargingStationById(stationId);
-            chargeDao.deleteChargingPileByStationId(stationId);
+            chargeDaoImpl.deleteChargingStationById(stationId);
+            chargeDaoImpl.deleteChargingPileByStationId(stationId);
         } catch (SQLException | InterruptedException e) {
             DBUtil.rollbackTransaction();
             throw new RuntimeException(e);
@@ -102,7 +103,7 @@ public class ChargeServiceImpl implements ChargeService {
      */
 
     public List<ChargingPileEntity> getChargingPilesByStationId(int stationId) throws Exception {
-        List<ChargingPileEntity> chargingPilesByStationId = new ChargeDao().getChargingPilesByStationId(stationId);
+        List<ChargingPileEntity> chargingPilesByStationId = new ChargeDaoImpl().getChargingPilesByStationId(stationId);
         DBUtil.close();
         return chargingPilesByStationId;
     }
@@ -116,9 +117,9 @@ public class ChargeServiceImpl implements ChargeService {
      */
     public void setPileState(int pileId, int state) throws SQLException, InterruptedException {
         DBUtil.beginTransaction();
-        ChargeDao chargeDao = new ChargeDao();
+        ChargeDaoImpl chargeDaoImpl = new ChargeDaoImpl();
         try {
-            chargeDao.setPileState(pileId,state);
+            chargeDaoImpl.setPileState(pileId,state);
         } catch (SQLException | InterruptedException e) {
             DBUtil.rollbackTransaction();
             throw new RuntimeException(e);
@@ -135,9 +136,9 @@ public class ChargeServiceImpl implements ChargeService {
      */
     public void deleteChargingPileById(int pileId) throws SQLException, InterruptedException {
         DBUtil.beginTransaction();
-        ChargeDao chargeDao = new ChargeDao();
+        ChargeDaoImpl chargeDaoImpl = new ChargeDaoImpl();
         try {
-            chargeDao.deleteChargingPileById(pileId);
+            chargeDaoImpl.deleteChargingPileById(pileId);
         } catch (SQLException | InterruptedException e) {
             DBUtil.rollbackTransaction();
             throw new RuntimeException(e);
@@ -155,7 +156,7 @@ public class ChargeServiceImpl implements ChargeService {
     public void addChargingPile(int stationId) throws SQLException, InterruptedException {
         DBUtil.beginTransaction();
         try {
-            new ChargeDao().addChargingPile(stationId);
+            new ChargeDaoImpl().addChargingPile(stationId);
         } catch (SQLException | InterruptedException e) {
             DBUtil.rollbackTransaction();
             throw new RuntimeException(e);
@@ -174,7 +175,7 @@ public class ChargeServiceImpl implements ChargeService {
 
     public List<ChargingPileBean> getFreePile(int stationId, int hour) throws Exception {
         List<ChargingPileBean> piles=new ArrayList<>();
-        for (ChargingPileEntity chargingPileEntity : new ChargeDao().getChargingPilesByStationId(stationId)) {
+        for (ChargingPileEntity chargingPileEntity : new ChargeDaoImpl().getChargingPilesByStationId(stationId)) {
             int freeTime = pileTime(hour, chargingPileEntity);
             if(freeTime>0){
                 ChargingPileBean chargingPileBean=new ChargingPileBean(chargingPileEntity);
@@ -195,7 +196,7 @@ public class ChargeServiceImpl implements ChargeService {
         ChargingPileBean chargingPileBean=new ChargingPileBean(chargingPileEntity);
         List<Integer> pileSituation = chargingPileBean.getPileSituation();
         int freeTime=0;
-        while(pileSituation.get(hour - 6)==0){
+        while(pileSituation.get(hour - 6)==0&&hour<23){
             freeTime++;
             hour++;
         }
@@ -204,26 +205,35 @@ public class ChargeServiceImpl implements ChargeService {
 
     /**
      * 设置使用时间
-     * @param id 充电桩的id
-     * @param pile 充电桩
-     * @param hour 开始使用的时间点
+     *
+     * @param id      充电桩的id
+     * @param pile    充电桩
+     * @param hour    开始使用的时间点
      * @param useTime 使用的时间段
+     * @return 是否成功
      * @throws SQLException 异常
-     * @throws InterruptedException 异常
      */
-    public void setPileTime(Integer id, ChargingPileBean pile, int hour, int useTime) throws SQLException, InterruptedException {
+    public boolean setPileTime(Integer id, ChargingPileBean pile, int hour, int useTime) throws SQLException {
         DBUtil.beginTransaction();
         List<Integer> pileSituation = pile.getPileSituation();
         for (int i = 0; i < useTime; i++) {
             pileSituation.set(hour-6+i,id);
         }
+        pile.setPileSituation(pileSituation);
         try {
-            new ChargeDao().setPileTime(pile);
+            new ChargeDaoImpl().setPileTime(pile);
         } catch (SQLException | InterruptedException e) {
             DBUtil.rollbackTransaction();
             throw new RuntimeException(e);
         }
         DBUtil.commitTransaction();
         DBUtil.close();
+        return true;
+    }
+
+    public ChargingPileEntity getChargingPilesById(int pileId) throws Exception {
+        ChargingPileEntity pileById = new ChargeDaoImpl().getPileById(pileId);
+        DBUtil.close();
+        return pileById;
     }
 }

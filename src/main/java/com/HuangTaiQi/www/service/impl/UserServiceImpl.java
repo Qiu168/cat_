@@ -1,15 +1,12 @@
 package com.HuangTaiQi.www.service.impl;
 
-import com.HuangTaiQi.www.dao.UserDao;
+import com.HuangTaiQi.www.dao.impl.UserDaoImpl;
 import com.HuangTaiQi.www.po.UserEntity;
 import com.HuangTaiQi.www.service.UserService;
 import com.HuangTaiQi.www.utils.DBUtil;
-import com.HuangTaiQi.www.utils.pool.ConnectionPoolManager;
 import com.HuangTaiQi.www.utils.code.Md5Utils;
-import com.HuangTaiQi.www.utils.TransactionManager;
 
 import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -40,15 +37,15 @@ public class UserServiceImpl implements UserService {
         user.setPassword(Md5Utils.encode(password));
         user.setUsername(username);
         user.setStudentNumber(studentNumber);
-        user.setState(false);
+        user.setState(UserEntity.FORBID);
         user.setAuthorityId(1);
-        DBUtil.commitTransaction();
+        DBUtil.beginTransaction();
         try {
-            UserDao userDao = new UserDao();
+            UserDaoImpl userDaoImpl = new UserDaoImpl();
             //还可以加studentNumber，学号唯一之类的。
-            UserEntity userByUsername = userDao.getUserByUsername(username);
+            UserEntity userByUsername = userDaoImpl.getUserByUsername(username);
             if(userByUsername==null){
-                userDao.addUser(user);
+                userDaoImpl.addUser(user);
             }else {
                 return false;
             }
@@ -70,9 +67,9 @@ public class UserServiceImpl implements UserService {
      * @throws Exception 异常
      */
     public UserEntity login(String username, String password) throws Exception {
-        UserEntity userByUsernameAndPassword = new UserDao().getUserByUsernameAndPassword(username, Md5Utils.encode(password));
+        UserEntity userByUsernameAndPassword = new UserDaoImpl().getUserByUsernameAndPassword(username, Md5Utils.encode(password));
         DBUtil.close();
-        if( userByUsernameAndPassword != null && userByUsernameAndPassword.getState()){
+        if( userByUsernameAndPassword != null && userByUsernameAndPassword.getState()!=0){
             return userByUsernameAndPassword;
         }else {
             return null;
@@ -85,7 +82,7 @@ public class UserServiceImpl implements UserService {
      * @throws Exception 异常
      */
     public List<UserEntity> showAuditUser() throws Exception {
-        List<UserEntity> usersWhereStateZero = new UserDao().getUsersByState(0);
+        List<UserEntity> usersWhereStateZero = new UserDaoImpl().getUsersByState(0);
         DBUtil.close();
         return usersWhereStateZero;
     }
@@ -100,7 +97,7 @@ public class UserServiceImpl implements UserService {
     public void pass(int UserId,int state) throws SQLException, InterruptedException {
         DBUtil.beginTransaction();
         try {
-            new UserDao().setUserState(UserId,state);
+            new UserDaoImpl().setUserState(UserId,state);
         } catch (SQLException | InterruptedException e) {
             DBUtil.rollbackTransaction();
             throw new RuntimeException(e);
@@ -115,7 +112,7 @@ public class UserServiceImpl implements UserService {
      * @throws Exception 异常
      */
     public List<UserEntity> showAuditedUser() throws Exception {
-        List<UserEntity> usersWhereStateOne = new UserDao().getUsersByState(1);
+        List<UserEntity> usersWhereStateOne = new UserDaoImpl().getUsersByState(1);
         DBUtil.close();
         return usersWhereStateOne;
     }
@@ -129,7 +126,7 @@ public class UserServiceImpl implements UserService {
     public void deleteById(int id) throws SQLException, InterruptedException {
         DBUtil.beginTransaction();
         try {
-            new UserDao().deleteUserById(id);
+            new UserDaoImpl().deleteUserById(id);
         } catch (SQLException | InterruptedException e) {
             DBUtil.rollbackTransaction();
             throw new RuntimeException(e);
@@ -148,7 +145,7 @@ public class UserServiceImpl implements UserService {
     public void setAuthority(int id, int authorityId) throws SQLException, InterruptedException {
         DBUtil.beginTransaction();
         try {
-            new UserDao().setUserAuthorityId(id,authorityId);
+            new UserDaoImpl().setUserAuthorityId(id,authorityId);
         } catch (SQLException | InterruptedException e) {
             DBUtil.rollbackTransaction();
             throw new RuntimeException(e);
@@ -167,8 +164,9 @@ public class UserServiceImpl implements UserService {
      */
     public void alterMobile(Integer id, String electromobileModel, String electromobileNumber) throws SQLException, InterruptedException {
         DBUtil.beginTransaction();
+        UserDaoImpl userDaoImpl = new UserDaoImpl();
         try {
-            new UserDao().alterMobile(id,electromobileModel,electromobileNumber);
+            userDaoImpl.alterMobile(id,electromobileModel,electromobileNumber);
         } catch (SQLException | InterruptedException e) {
             DBUtil.rollbackTransaction();
             throw new RuntimeException(e);

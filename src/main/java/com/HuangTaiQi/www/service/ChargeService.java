@@ -81,12 +81,14 @@ public interface ChargeService {
     List<ChargingPileBean> getFreePile(int stationId, int hour) throws Exception;
     /**
      * 设置使用时间
-     * @param id 充电桩的id
-     * @param pile 充电桩
-     * @param hour 开始使用的时间点
+     *
+     * @param id      充电桩的id
+     * @param pile    充电桩
+     * @param hour    开始使用的时间点
      * @param useTime 使用的时间段
-     * @throws SQLException 异常
+     * @return 是否成功
+     * @throws SQLException         异常
      * @throws InterruptedException 异常
      */
-    void setPileTime(Integer id, ChargingPileBean pile, int hour, int useTime) throws SQLException, InterruptedException;
+    boolean setPileTime(Integer id, ChargingPileBean pile, int hour, int useTime) throws SQLException, InterruptedException;
 }

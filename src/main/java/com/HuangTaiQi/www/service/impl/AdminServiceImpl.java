@@ -1,16 +1,15 @@
 package com.HuangTaiQi.www.service.impl;
 
-import com.HuangTaiQi.www.dao.AdminDao;
+import com.HuangTaiQi.www.dao.impl.AdminDaoImpl;
 import com.HuangTaiQi.www.po.AdminEntity;
 import com.HuangTaiQi.www.service.AdminService;
 import com.HuangTaiQi.www.utils.DBUtil;
-import com.HuangTaiQi.www.utils.pool.ConnectionPoolManager;
+
+import com.HuangTaiQi.www.utils.TextLog;
 import com.HuangTaiQi.www.utils.code.Md5Utils;
-import com.HuangTaiQi.www.utils.TransactionManager;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +27,8 @@ public class AdminServiceImpl implements AdminService {
      * @throws Exception 异常
      */
     public synchronized AdminEntity createAdminAccount() throws Exception {
-        AdminDao adminDao = new AdminDao();
+        DBUtil.beginTransaction();
+        AdminDaoImpl adminDaoImpl = new AdminDaoImpl();
         Map<String, String> map = new HashMap<>();
         // 使用线程安全的 SecureRandom 生成随机数
         SecureRandom random = new SecureRandom();
@@ -41,17 +41,18 @@ public class AdminServiceImpl implements AdminService {
                 username.append(random.nextInt(10));
             }
             // 使用 Map.putIfAbsent() 方法检查用户名是否已经存在
-        } while (map.putIfAbsent(username.toString(), UUID.randomUUID().toString()) != null || adminDao.selectByUsername(username.toString()) != null);
+        } while (map.putIfAbsent(username.toString(), UUID.randomUUID().toString()) != null || adminDaoImpl.selectByUsername(username.toString()) != null);
         // 将生成的用户名和密码记录到数据库中
         AdminEntity admin = new AdminEntity(username.toString(), map.get(username.toString()));
-        DBUtil.commitTransaction();
         try {
-            adminDao.add(new AdminEntity(admin.getUsername(), Md5Utils.encode(admin.getPassword())));
+            adminDaoImpl.add(new AdminEntity(admin.getUsername(), Md5Utils.encode(admin.getPassword())));
         } catch (SQLException | InterruptedException e) {
             DBUtil.rollbackTransaction();
             throw new RuntimeException(e);
         }
+        DBUtil.commitTransaction();
         DBUtil.close();
+        TextLog.add("新增admin，账号为"+username);
         return admin;
     }
 
@@ -63,14 +64,14 @@ public class AdminServiceImpl implements AdminService {
      * @throws Exception 异常
      */
     public AdminEntity login(String username, String password) throws Exception {
-        AdminEntity admin = new AdminDao().getAdminByUsernameAndPassword(username, Md5Utils.encode(password));
+        AdminEntity admin = new AdminDaoImpl().getAdminByUsernameAndPassword(username, Md5Utils.encode(password));
         DBUtil.close();
         return admin;
     }
 
     /**
      * 改密码
-     * @param id 管理员id
+     * @param username 管理员账号
      * @param origin 原来的密码
      * @param next  改后的密码
      * @return 是否成功
@@ -78,11 +79,12 @@ public class AdminServiceImpl implements AdminService {
      * @throws InterruptedException 异常
      * @throws SQLException 异常
      */
-    public boolean changePassword(Integer id, String origin, String next) throws NoSuchAlgorithmException, InterruptedException, SQLException {
+    public boolean changePassword(String username, String origin, String next) throws Exception {
         DBUtil.beginTransaction();
-        if(origin.equals(Md5Utils.encode(next))){
+        AdminDaoImpl adminDaoImpl = new AdminDaoImpl();
+        if(adminDaoImpl.getAdminByUsernameAndPassword(username,Md5Utils.encode(origin))!=null){
             try {
-                new AdminDao().changePassword(id,next);
+                adminDaoImpl.changePassword(username,next);
             } catch (SQLException e) {
                 DBUtil.rollbackTransaction();
                 throw new RuntimeException(e);
@@ -93,5 +95,9 @@ public class AdminServiceImpl implements AdminService {
         DBUtil.commitTransaction();
         DBUtil.close();
         return true;
+    }
+
+    public void showReport(int year, int month, int day) throws Exception {
+        TextLog.readTxt(year,month,day);
     }
 }

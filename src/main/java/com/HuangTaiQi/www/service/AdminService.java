@@ -20,9 +20,10 @@ public interface AdminService {
      * @throws Exception 异常
      */
     public AdminEntity login(String username, String password) throws Exception;
+
     /**
      * 改密码
-     * @param id 管理员id
+     * @param username 管理员账号
      * @param origin 原来的密码
      * @param next  改后的密码
      * @return 是否成功
@@ -30,6 +31,15 @@ public interface AdminService {
      * @throws InterruptedException 异常
      * @throws SQLException 异常
      */
-    public boolean changePassword(Integer id, String origin, String next) throws NoSuchAlgorithmException, InterruptedException, SQLException;
+    public boolean changePassword(String username, String origin, String next) throws Exception;
+
+    /**
+     * 获取某一天的报表
+     * @param year 年
+     * @param month 月
+     * @param day 日
+     * @throws Exception 异常
+     */
+    public void showReport(int year, int month, int day) throws Exception;
 
 }
