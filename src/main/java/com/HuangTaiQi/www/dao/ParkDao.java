@@ -2,63 +2,96 @@ package com.HuangTaiQi.www.dao;
 
 import com.HuangTaiQi.www.po.ParkingLotEntity;
 import com.HuangTaiQi.www.po.ParkingSpotEntity;
-import com.HuangTaiQi.www.utils.DBUtil;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-public class ParkDao{
-    private Connection connection= DBUtil.getConnection();
+/**
+ * 停车
+ * @author 14629
+ */
+public interface ParkDao {
+    /**
+     * 获取停车场
+     * @return 停车场集合
+     * @throws Exception 异常
+     */
+    List<ParkingLotEntity> getParkLots() throws Exception;
 
-    BaseDao baseDao=new BaseDao(connection);
-    public List<ParkingLotEntity> getParkLots() throws Exception {
-        String sql="select * from parkinglot ";
-        return baseDao.selectByParams(sql, ParkingLotEntity.class);
-    }
+    /**
+     * 新增停车场
+     * @param location 地点
+     * @param name 名字
+     * @throws SQLException 异常
+     * @throws InterruptedException 异常
+     */
+    void addParkingLot(String location, String name) throws SQLException, InterruptedException;
 
-    public void addParkingLot(String location, String name) throws SQLException, InterruptedException {
-        String sql="insert into parkinglot(location,name) values(?,?)";
-        baseDao.updateCommon(sql,location,name);
-    }
+    /**
+     * 获取停车场内的停车点
+     * @param lotId 停车场id
+     * @return 此停车场中的所有停车点
+     * @throws Exception 异常
+     */
+    List<ParkingSpotEntity> getParkSpots(int lotId) throws Exception;
 
-    public List<ParkingSpotEntity> getParkSpots(int lotId) throws Exception {
-        String sql="select * from parkingspot where location_id=?";
-        return baseDao.selectByParams(sql, ParkingSpotEntity.class,lotId);
-    }
+    /**
+     * 删除停车点
+     * @param spotId 被删除的停车点id
+     * @throws SQLException 异常
+     */
+    public void deleteSpot(int spotId) throws SQLException;
 
-    public void deleteSpot(int spotId) throws SQLException, InterruptedException {
-        String sql="delete from parkingspot where id=?";
-        baseDao.updateCommon(sql,spotId);
-    }
+    /**
+     * 设置停车点的状态，是否使用中
+     * @param spotId 停车点id
+     * @param state 状态
+     * @throws SQLException 异常
+     * @throws InterruptedException 异常
+     */
+    public void setSpotState(int spotId, int state) throws SQLException, InterruptedException;
 
-    public void setSpotState(int spotId, int state) throws SQLException, InterruptedException {
-        String sql="update parkingspot set state=? where id=?";
-        baseDao.updateCommon(sql,state,spotId);
-    }
+    /**
+     * 删除停车场中的所有停车点
+     * @param lotId 停车场id
+     * @throws SQLException 异常
+     * @throws InterruptedException 异常
+     */
+    public void deleteSpotByLocationId(int lotId) throws SQLException, InterruptedException;
 
-    public void deleteSpotByLocationId(int lotId) throws SQLException, InterruptedException {
-        String sql="delete from parkingspot where location_id=?";
-        baseDao.updateCommon(sql,lotId);
-    }
+    /**
+     * 删除停车场
+     * @param lotId 停车场id
+     * @throws SQLException 异常
+     * @throws InterruptedException 异常
+     */
+    public void deleteLot(int lotId) throws SQLException, InterruptedException;
 
-    public void deleteLot(int lotId) throws SQLException, InterruptedException {
-        String sql="delete from parkinglot where id=?";
-        baseDao.updateCommon(sql,lotId);
-    }
+    /**
+     * 修改停车场
+     * @param lotId 停车场id
+     * @param location 停车场地点
+     * @param name 名字
+     * @throws SQLException 异常
+     * @throws InterruptedException 异常
+     */
+    void alterLot(int lotId, String location, String name) throws SQLException, InterruptedException;
 
-    public void alterLot(int lotId, String location, String name) throws SQLException, InterruptedException {
-        String sql="update parkinglot set location=?,name=? where id=?";
-        baseDao.updateCommon(sql,location,name,lotId);
-    }
+    /**
+     * 新增停车点
+     * @param lotId 停车场id
+     * @throws SQLException 异常
+     * @throws InterruptedException 异常
+     *
+     */
+    void addSpot(int lotId) throws SQLException, InterruptedException;
 
-    public void addSpot(int lotId) throws SQLException, InterruptedException {
-        String sql="insert into parkingspot(location_id) values(?)";
-        baseDao.updateCommon(sql,lotId);
-    }
-
-    public void setSpotStateByState(Integer userId, int state) throws SQLException, InterruptedException {
-        String sql="update parkingspot set state=? where state=?";
-        baseDao.updateCommon(sql,state,userId);
-    }
+    /**
+     * 通过停车点的状态设置停车点状态
+     * @param userId 使用者的id，先前的状态
+     * @param state 设置后的状态
+     * @throws SQLException 异常
+     * @throws InterruptedException 异常
+     */
+    void setSpotStateByState(Integer userId, int state) throws SQLException, InterruptedException;
 }

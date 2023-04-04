@@ -1,4 +1,4 @@
-package com.HuangTaiQi.www.dao;
+package com.HuangTaiQi.www.dao.impl;
 
 
 
@@ -85,17 +85,13 @@ public class BaseDao {
      * @param sql 修改的sql
      * @param args 参数
      */
-    public void updateCommon(String sql, Object ...args) {
+    public void updateCommon(String sql, Object ...args) throws SQLException {
         PreparedStatement ps = null;
-        boolean execute = false;
-        try {
-            ps = connection.prepareStatement(sql);
-            for (int i = 0; i < args.length; i++) {
-                ps.setObject(i+1,args[i]);
-            }
-            ps.execute();
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "msg: e=" + e.getMessage());
+        ps = connection.prepareStatement(sql);
+        for (int i = 0; i < args.length; i++) {
+            ps.setObject(i+1,args[i]);
         }
+        ps.execute();
+
     }
 }

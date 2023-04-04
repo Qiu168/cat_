@@ -3,94 +3,93 @@ package com.HuangTaiQi.www.dao;
 import com.HuangTaiQi.www.po.ChargingPileBean;
 import com.HuangTaiQi.www.po.ChargingPileEntity;
 import com.HuangTaiQi.www.po.ChargingStationEntity;
-import com.HuangTaiQi.www.utils.DBUtil;
-import com.HuangTaiQi.www.utils.SQLBuilder;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-public class ChargeDao {
-    private final Connection connection= DBUtil.getConnection();
+/**
+ * 充电
+ * @author 14629
+ */
+public interface ChargeDao {
+    /**
+     * 获取所有充电站
+     * @return 充电站集合
+     * @throws Exception 异常
+     */
+    List<ChargingStationEntity> getChargingStations() throws Exception;
 
-    BaseDao baseDao=new BaseDao(connection);
+    /**
+     * 新增充电站
+     * @param location 充电站地点
+     * @param name 名称
+     * @param open 开启时间
+     * @param close 关闭时间
+     * @throws SQLException 异常
+     * @throws InterruptedException 异常
+     */
 
-    public List<ChargingStationEntity> getChargingStations() throws Exception {
-        String sql=new SQLBuilder("chargingstation").select("*").buildSelect();
-        return baseDao.selectByParams(sql, ChargingStationEntity.class);
-    }
+    void addChargingStation(String location, String name, int open, int close) throws SQLException, InterruptedException;
 
-    public void addChargingStation(String location, String name, int open, int close) throws SQLException, InterruptedException {
-        String sql=new SQLBuilder("chargingstation")
-                .insert("location")
-                .insert("name")
-                .insert("open")
-                .insert("close")
-                .buildInsert();
-        baseDao.updateCommon(sql,location,name,open,close);
+    /**
+     * 修改充电站的参数
+     * @param stationId 充电站id
+     * @param location 地点
+     * @param name 名字
+     * @param open 开启时间
+     * @param close 关闭时间
+     * @throws SQLException 异常
+     * @throws InterruptedException 异常
+     */
+    void updateChargingStation(int stationId, String location, String name, int open, int close) throws SQLException, InterruptedException;
 
-    }
+    /**
+     * 删除充电站
+     * @param stationId 被删除的充电站id
+     * @throws SQLException 异常
+     * @throws InterruptedException 异常
+     */
+    void deleteChargingStationById(int stationId) throws SQLException, InterruptedException;
 
-    public void updateChargingStation(int stationId, String location, String name, int open, int close) throws SQLException, InterruptedException {
-        String sql="update chargingstation set location=?,name=?,open=?,close=? where id=?";
-        baseDao.updateCommon(sql,location,name,open,close,stationId);
-    }
+    /**
+     * 删除某个充电站所有的充电桩
+     * @param stationId 充电站id
+     * @throws SQLException 异常
+     * @throws InterruptedException 异常
+     */
+    void deleteChargingPileByStationId(int stationId) throws SQLException, InterruptedException;
 
-    public void deleteChargingStationById(int stationId) throws SQLException, InterruptedException {
-        String sql="delete from chargingstation where id=?";
-        baseDao.updateCommon(sql,stationId);
-    }
+    /**
+     * 设置充电桩的状态
+     * @param pileId 充电桩的id
+     * @param state 状态
+     * @throws SQLException 异常
+     * @throws InterruptedException 异常
+     */
+    void setPileState(int pileId, int state) throws SQLException, InterruptedException;
 
-    public List<ChargingPileEntity> getChargingPilesByStationId(int stationId) throws Exception {
-        String sql=new SQLBuilder("chargingpile").select("*").where("station_id").buildSelect();
-        return baseDao.selectByParams(sql, ChargingPileEntity.class,stationId);
-    }
+    /**
+     * 删除充电桩
+     * @param pileId 被删除的充电桩id
+     * @throws SQLException 异常
+     * @throws InterruptedException 异常
+     */
+    void deleteChargingPileById(int pileId) throws SQLException, InterruptedException;
 
-    public void deleteChargingPileByStationId(int stationId) throws SQLException, InterruptedException {
-        String sql="delete from chargingpile where station_id=?";
-        baseDao.updateCommon(sql,stationId);
-    }
+    /**
+     * 新增充电桩
+     * @param stationId 新增到的充电站
+     * @throws SQLException 异常
+     * @throws InterruptedException 异常
+     */
+    void addChargingPile(int stationId) throws SQLException, InterruptedException;
 
-    public void setPileState(int pileId, int state) throws SQLException, InterruptedException {
-        String sql="update chargingpile set state=? where id=?";
-        baseDao.updateCommon(sql,state,pileId);
-    }
-
-    public void deleteChargingPileById(int pileId) throws SQLException, InterruptedException {
-        String sql="delete from chargingpile where id=?";
-        baseDao.updateCommon(sql,pileId);
-    }
-
-    public void addChargingPile(int stationId) throws SQLException, InterruptedException {
-        String sql="insert into chargingpile(station_id) values(?)";
-        baseDao.updateCommon(sql,stationId);
-    }
-
-    public void setPileTime(ChargingPileBean pile) throws SQLException, InterruptedException {
-        String sql="update chargingpile set six_seven=?,seven_eight=?,eight_nine=?,nine_ten=?,ten_eleven=?," +
-                "eleven_twelve=?,twelve_thirteen=?,thirteen_fourteen=?,fourteen_fifteen=?,fifteen_sixteen=?," +
-                "sixteen_seventeen=?,seventeen_eighteen=?,eighteen_nineteen=?,nineteen_twenty=?,twenty_twenty_one=?" +
-                ",t_one_two=?,t_two_three=?,t_three_four=?  where id=?";
-        List<Integer> pileSituation = pile.getPileSituation();
-        baseDao.updateCommon(sql,
-                pileSituation.get(0),
-                pileSituation.get(1),
-                pileSituation.get(2),
-                pileSituation.get(3),
-                pileSituation.get(4),
-                pileSituation.get(5),
-                pileSituation.get(6),
-                pileSituation.get(7),
-                pileSituation.get(8),
-                pileSituation.get(9),
-                pileSituation.get(10),
-                pileSituation.get(11),
-                pileSituation.get(12),
-                pileSituation.get(13),
-                pileSituation.get(14),
-                pileSituation.get(15),
-                pileSituation.get(16),
-                pileSituation.get(17),
-                pile.getId());
-    }
+    /**
+     * 设施充电桩的使用时间。占位表示此时间有人使用
+     * @param pile 充电站
+     * @throws SQLException 异常
+     * @throws InterruptedException 异常
+     */
+    void setPileTime(ChargingPileBean pile) throws SQLException, InterruptedException;
+    List<ChargingPileEntity> getChargingPilesByStationId(int stationId) throws Exception;
 }
