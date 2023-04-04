@@ -41,7 +41,7 @@ public class UserServlet extends BaseServlet{
 
     public void pass(int id) {
         try {
-            new UserServiceImpl().pass(id,1);
+            new UserServiceImpl().pass(id,UserEntity.FREE);
         } catch (SQLException | InterruptedException e) {
             handleException(UserServlet.class,e);
         }
@@ -65,7 +65,7 @@ public class UserServlet extends BaseServlet{
             }
         }else {
             try {
-                new UserServiceImpl().pass(id,0);
+                new UserServiceImpl().pass(id,UserEntity.FORBID);
             } catch (SQLException | InterruptedException e) {
                 handleException(UserServlet.class,e);
             }

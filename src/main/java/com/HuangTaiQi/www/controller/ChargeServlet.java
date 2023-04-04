@@ -8,6 +8,9 @@ import com.HuangTaiQi.www.service.impl.ChargeServiceImpl;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * @author 14629
+ */
 public class ChargeServlet extends BaseServlet{
     ChargeServiceImpl chargeServiceImpl =new ChargeServiceImpl();
     public List<ChargingStationEntity> showChargingStation() {
@@ -83,7 +86,7 @@ public class ChargeServlet extends BaseServlet{
      */
     public List<ChargingPileBean> showFreePile(int stationId, int hour) {
         try {
-            chargeServiceImpl.getFreePile(stationId,hour);
+            return chargeServiceImpl.getFreePile(stationId,hour);
         } catch (Exception e) {
             handleException(ChargeServlet.class,e);
         }
@@ -93,10 +96,19 @@ public class ChargeServlet extends BaseServlet{
 
     public boolean usePile(Integer id, ChargingPileBean pile, int hour, int useTime) {
         try {
-            chargeServiceImpl.setPileTime(id,pile,hour,useTime);
+            return chargeServiceImpl.setPileTime(id,pile,hour,useTime);
         } catch (Exception e) {
             handleException(ChargeServlet.class,e);
         }
         return false;
+    }
+
+    public ChargingPileEntity getPileById(int pileId)  {
+        try {
+            return chargeServiceImpl.getChargingPilesById(pileId);
+        } catch (Exception e) {
+            handleException(ChargeServlet.class,e);
+        }
+        return null;
     }
 }

@@ -7,6 +7,9 @@ import com.HuangTaiQi.www.service.impl.ParkServiceImpl;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * @author 14629
+ */
 public class ParkServlet extends BaseServlet{
     private final ParkServiceImpl parkServiceImpl =new ParkServiceImpl();
     public List<ParkingLotEntity> showParkingLot() {
