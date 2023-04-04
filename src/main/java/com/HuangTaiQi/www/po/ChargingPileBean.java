@@ -1,14 +1,19 @@
 package com.HuangTaiQi.www.po;
 
+import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * 将每一个时间段的状态存入集合中，容易获取和查看
+ * @author 14629
+ */
 public class ChargingPileBean {
     private Integer id;
     private Boolean state;
     private Integer stationId;
     private Integer freeTime;
 
-    private List<Integer> pileSituation;
+    private List<Integer> pileSituation=new ArrayList<>();
 
     public ChargingPileBean(ChargingPileEntity chargingPileEntity) {
         this.id=chargingPileEntity.getId();
@@ -81,7 +86,7 @@ public class ChargingPileBean {
                 ", state=" + state +
                 ", stationId=" + stationId +
                 "你可以使用：" + (freeTime-((min==0)?0:1)) +
-                "小时" + (min) +
+                "小时" + (60-min) +
                 "分钟}";
     }
 }
