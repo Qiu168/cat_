@@ -1,3 +1,4 @@
+import com.HuangTaiQi.www.dao.impl.ChargeDaoImpl;
 import com.HuangTaiQi.www.po.ChargingPileEntity;
 import com.HuangTaiQi.www.po.ChargingStationEntity;
 import com.HuangTaiQi.www.service.ChargeService;
@@ -19,6 +20,12 @@ public class ChargeServiceTest {
     public void testGetChargingStations() throws Exception {
         List<ChargingStationEntity> chargingStations = chargeService.getChargingStations();
         assertNotNull(chargingStations);
+    }
+    @Test
+    public void test() throws Exception {
+        ChargingPileEntity pileById = new ChargeDaoImpl().getPileById(1);
+        assertNotNull(pileById);
+
     }
 
 

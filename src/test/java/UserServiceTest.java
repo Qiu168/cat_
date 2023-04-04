@@ -11,7 +11,7 @@ public class UserServiceTest {
     UserService userService=new UserServiceImpl();
     @Test
     public void testLogin() throws Exception {
-        UserEntity login = userService.login("123456", "123456");
+        UserEntity login = userService.login("123789", "123789");
         assertNotNull(login);
     }
     @Test
