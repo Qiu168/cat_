@@ -16,11 +16,11 @@ import java.util.logging.Logger;
  * @author 14629
  */
 public class ImplConnectionPool implements IntfConnectionPool {
-    private static Logger logger = Logger.getLogger("com.HuangTaiQi.www.pool.ImplConnectionPool");
-    private DataSourceConfig config;
-    private AtomicInteger currentActive =new AtomicInteger(0);
-    private Vector<Connection> freePools=new Vector<>();
-    private Vector<PoolEntry> usePools = new Vector<> ();
+    private static final Logger logger = Logger.getLogger("com.HuangTaiQi.www.pool.ImplConnectionPool");
+    private final DataSourceConfig config;
+    private final AtomicInteger currentActive =new AtomicInteger(0);
+    private final Vector<Connection> freePools=new Vector<>();
+    private final Vector<PoolEntry> usePools = new Vector<> ();
     public ImplConnectionPool(DataSourceConfig config) throws SQLException, ClassNotFoundException {
         this.config=config;
         init();
@@ -93,7 +93,7 @@ public class ImplConnectionPool implements IntfConnectionPool {
             }
         }
         try {
-            if (!conn.isClosed() && conn != null ){
+            if (!conn.isClosed()){
                 freePools.add(conn);
             }
         } catch (SQLException e) {
