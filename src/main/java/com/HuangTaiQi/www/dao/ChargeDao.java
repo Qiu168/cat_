@@ -67,10 +67,10 @@ public class ChargeDao {
     }
 
     public void setPileTime(ChargingPileBean pile) throws SQLException, InterruptedException {
-        String sql="update chargingpile(six_seven,seven_eight,eight_nine,nine_ten,ten_eleven," +
-                "eleven_twelve,twelve_thirteen,thirteen_fourteen,fourteen_fifteen,fifteen_sixteen," +
-                "sixteen_seventeen,seventeen_eighteen,eighteen_nineteen,nineteen_twenty,twenty_twenty_one" +
-                ",t_one_two,t_two_three,t_three_four) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        String sql="update chargingpile set six_seven=?,seven_eight=?,eight_nine=?,nine_ten=?,ten_eleven=?," +
+                "eleven_twelve=?,twelve_thirteen=?,thirteen_fourteen=?,fourteen_fifteen=?,fifteen_sixteen=?," +
+                "sixteen_seventeen=?,seventeen_eighteen=?,eighteen_nineteen=?,nineteen_twenty=?,twenty_twenty_one=?" +
+                ",t_one_two=?,t_two_three=?,t_three_four=?  where id=?";
         List<Integer> pileSituation = pile.getPileSituation();
         baseDao.updateCommon(sql,
                 pileSituation.get(0),
@@ -90,6 +90,7 @@ public class ChargeDao {
                 pileSituation.get(14),
                 pileSituation.get(15),
                 pileSituation.get(16),
-                pileSituation.get(17));
+                pileSituation.get(17),
+                pile.getId());
     }
 }

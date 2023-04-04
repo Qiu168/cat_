@@ -30,8 +30,8 @@ public class AdminDao {
         return list==null?null:(AdminEntity) list.get(0);
     }
 
-    public void changePassword(Integer id, String next) throws SQLException, InterruptedException {
-        String sql="uodate admin set password=? where id=?";
-        baseDao.updateCommon(sql,next,id);
+    public void changePassword(String username, String next) throws SQLException, InterruptedException {
+        String sql="uodate admin set password=? where username=?";
+        baseDao.updateCommon(sql,next,username);
     }
 }
