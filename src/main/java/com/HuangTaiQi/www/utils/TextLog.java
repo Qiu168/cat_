@@ -1,6 +1,11 @@
 package com.HuangTaiQi.www.utils;
 
+
+import com.HuangTaiQi.www.dao.impl.ChargeDaoImpl;
+
+
 import java.io.*;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -18,26 +23,39 @@ public class TextLog {
     /**
      *  定时任务，每天0点执行一次
      */
-    private static final TimerTask SAVE_TO_FILE = new TimerTask() {
+    private static final TimerTask SAVE_TO_FILE_AND_REFRESH = new TimerTask() {
         @Override
         public void run() {
-            LocalDateTime now = LocalDateTime.now();
-            String fileName = "textLog_" + now.getYear() + "-" + now.getMonthValue() + "-" + now.getDayOfMonth() + ".txt";
-            File file = new File(fileName);
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                logger.log(Level.SEVERE,"Failed to create a file");
-                throw new RuntimeException(e);
-            }
-            try (FileWriter writer = new FileWriter(file)) {
-                writer.write(textLog);
-                textLog = "";
-            } catch (IOException e) {
-                logger.log(Level.SEVERE,"Failed to save text log to file: " + e.getMessage());
-            }
+            saveFile();
+            refresh();
         }
     };
+
+    private static void refresh() {
+        try {
+            ChargeDaoImpl.refresh();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void saveFile(){
+        LocalDateTime now = LocalDateTime.now();
+        String fileName = "textLog_" + now.getYear() + "-" + now.getMonthValue() + "-" + now.getDayOfMonth() + ".txt";
+        File file = new File(fileName);
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            logger.log(Level.SEVERE,"Failed to create a file");
+            throw new RuntimeException(e);
+        }
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write(textLog);
+            textLog = "";
+        } catch (IOException e) {
+            logger.log(Level.SEVERE,"Failed to save text log to file: " + e.getMessage());
+        }
+    }
 
     static {
         // 创建定时器
@@ -45,7 +63,7 @@ public class TextLog {
         // 计算到明天0点的时间差
         long delay = DAY_IN_MILLIS - (System.currentTimeMillis() % DAY_IN_MILLIS);
         // 启动定时任务
-        timer.scheduleAtFixedRate(SAVE_TO_FILE, delay, DAY_IN_MILLIS);
+        timer.scheduleAtFixedRate(SAVE_TO_FILE_AND_REFRESH, delay, DAY_IN_MILLIS);
     }
 
     public static void add(String text) {
