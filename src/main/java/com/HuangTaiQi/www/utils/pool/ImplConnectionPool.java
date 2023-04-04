@@ -1,9 +1,9 @@
-package com.HuangTaiQi.www.utils;
+package com.HuangTaiQi.www.utils.pool;
 
 
 
 import com.HuangTaiQi.www.config.DataSourceConfig;
-import com.HuangTaiQi.www.po.PoolEntry;
+
 import java.sql.*;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -16,11 +16,11 @@ import java.util.logging.Logger;
  * @author 14629
  */
 public class ImplConnectionPool implements IntfConnectionPool {
-    private static Logger logger = Logger.getLogger("com.HuangTaiQi.www.utils.ImplConnectionPool");
-    private DataSourceConfig config;
-    private AtomicInteger currentActive =new AtomicInteger(0);
-    private Vector<Connection> freePools=new Vector<>();
-    private Vector<PoolEntry> usePools = new Vector<> ();
+    private static final Logger logger = Logger.getLogger("com.HuangTaiQi.www.pool.ImplConnectionPool");
+    private final DataSourceConfig config;
+    private final AtomicInteger currentActive =new AtomicInteger(0);
+    private final Vector<Connection> freePools=new Vector<>();
+    private final Vector<PoolEntry> usePools = new Vector<> ();
     public ImplConnectionPool(DataSourceConfig config) throws SQLException, ClassNotFoundException {
         this.config=config;
         init();
@@ -43,6 +43,13 @@ public class ImplConnectionPool implements IntfConnectionPool {
         logger.info("new一个新的连接："+conn);
         return conn;
     }
+    private void createConnections() throws SQLException {
+        for (int i = 0; i < Integer.parseInt(config.getNumConnectionsToCreate()); i++) {
+            Connection conn = createConnection();
+            freePools.add(conn);
+            currentActive.incrementAndGet();
+        }
+    }
     public synchronized PoolEntry getPoolEntry() throws InterruptedException, SQLException {
         Connection conn;
         if (!freePools.isEmpty()) {
@@ -50,7 +57,9 @@ public class ImplConnectionPool implements IntfConnectionPool {
             freePools.remove(0);
         } else {
             if (currentActive.get() < Integer.parseInt(config.getMaxSize())) {
-                conn = createConnection();
+                createConnections();
+                conn = freePools.get(0);
+                freePools.remove(0);
             } else {
                 logger.info(Thread.currentThread().getName() + ",连接池最大连接数为:" + config.getMaxSize() + "已经满了，需要等待...");
                 wait(1000);
@@ -67,30 +76,46 @@ public class ImplConnectionPool implements IntfConnectionPool {
 
 
     @Override
-    public synchronized void close(Connection conn) throws SQLException {
+    public synchronized void close(Connection conn){
         for ( int i = 0; i < usePools.size();i++ ){
             if(usePools.get(i).getConn()==conn){
                 usePools.remove(i);
                 if(currentActive.get()>Integer.parseInt(config.getInitSize())){
-                    conn.close();
+                    try {
+                        conn.close();
+                    } catch (SQLException e) {
+                        logger.log(Level.SEVERE,"connection:"+conn+"close失败");
+                    }
                     currentActive.decrementAndGet();
                     logger.info("动态缩小了线程池！释放了连接:"+conn);
                 }
                 break;
             }
         }
-        if (!conn.isClosed() && conn != null ){
-            freePools.add(conn);
+        try {
+            if (!conn.isClosed()){
+                freePools.add(conn);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE,"e="+e.getMessage());
         }
         logger.info("回收了一个连接:"+conn+",空闲连接数为:"+freePools.size()+",在用线程数为:"+usePools.size());
         notifyAll();
     }
-    public synchronized void closeAll(Connection conn, Statement stmt, ResultSet rs) throws SQLException {
+    public synchronized void closeAll(Connection conn, Statement stmt, ResultSet rs) {
         if(rs!=null) {
-            rs.close();
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
         if(stmt!=null) {
-            stmt.close();
+            try {
+                stmt.close();
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
         close(conn);
     }

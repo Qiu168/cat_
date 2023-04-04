@@ -1,75 +1,102 @@
 package com.HuangTaiQi.www.dao;
 
 import com.HuangTaiQi.www.po.UserEntity;
-import com.HuangTaiQi.www.utils.SQLBuilder;
 
-import java.sql.*;
-import java.util.ArrayList;
+import java.sql.SQLException;
 import java.util.List;
 
-public class UserDao {
-    private final Connection connection;
+/**
+ * user
+ * @author 14629
+ */
+public interface UserDao {
+    /**
+     * 新增user
+     * @param user user对象
+     * @throws SQLException 异常
+     */
+    void addUser(UserEntity user) throws SQLException;
 
-    public UserDao(Connection connection) {
-        this.connection = connection;
-    }
+    /**
+     * 删除user
+     * @param id userid
+     * @throws SQLException 异常
+     * @throws InterruptedException 异常
+     */
+    void deleteUserById(int id) throws SQLException, InterruptedException;
 
-    public synchronized void addUser(UserEntity user) throws SQLException, InterruptedException {
-        String sql = "INSERT INTO users (student_number, name, username, password, electromobile_model, electromobile_number,state,authority_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        new BaseDao(connection).updateCommon(sql,user.getStudentNumber(),user.getName(),user.getUsername(),
-                user.getPassword(),user.getElectromobileModel(),user.getElectromobileNumber(),user.getState(),user.getAuthorityId());
-    }
+    /**
+     * 获取user
+     * @param id userId
+     * @return user对象
+     * @throws Exception 异常
+     */
+    UserEntity getUserById(int id) throws Exception;
 
-    public void deleteUserById(int id) throws SQLException, InterruptedException {
-//        String sql="select * from users where id=? by update";
-        BaseDao baseDao=new BaseDao(connection);
-//        baseDao.selectByParams(sql,UserEntity.class,id);
-        String sql = "DELETE FROM users WHERE id = ?";
-        baseDao.updateCommon(sql,id);
-    }
+    /**
+     * 获取user
+     * @param username 账号
+     * @return user对象
+     * @throws Exception 异常
+     */
+    UserEntity getUserByUsername(String username) throws Exception;
 
-    public UserEntity getUserById(int id) throws Exception {
-        String sql = "SELECT * FROM users WHERE id = ?";
-        return (UserEntity) new BaseDao(connection).selectByParams(sql, UserEntity.class,id).get(0);
-    }
-    public UserEntity getUserByUsername(String username) throws Exception {
-        String sql = "SELECT * FROM users WHERE username = ?";
-        List list = new BaseDao(connection).selectByParams(sql, UserEntity.class, username);
-        return list==null?null:(UserEntity)list.get(0);
-    }
+    /**
+     * 获取所有user
+     * @return 返回user集合
+     * @throws Exception 异常
+     */
+    List<UserEntity> getAllUsers() throws Exception;
 
-    public List<UserEntity> getAllUsers() throws Exception {
-        String sql = "SELECT * FROM users";
-        return new BaseDao(connection).selectByParams(sql, UserEntity.class);
-    }
+    /**
+     * 修改user
+     * @param user 改后的user
+     * @throws SQLException 异常
+     */
+    void updateUser(UserEntity user) throws SQLException;
 
-    public void updateUser(UserEntity user) throws SQLException, InterruptedException {
-        String sql = "UPDATE users SET student_number = ?, name = ?,  username = ?, password = ?, electromobile_model = ?, electromobile_number = ?,state=?,authority_id=? WHERE id = ?";
-        new BaseDao(connection).updateCommon(sql,
-                user.getStudentNumber(),
-                user.getName(),
-                user.getUsername(),
-                user.getPassword(),
-                user.getElectromobileModel(),
-                user.getElectromobileNumber(),
-                user.getState(),
-                user.getAuthorityId(),
-                user.getId());
-    }
+    /**
+     * 通过账号密码获取user，登录
+     * @param username 账号
+     * @param password 密码
+     * @return user对象
+     * @throws Exception 异常
+     */
+    UserEntity getUserByUsernameAndPassword(String username, String password) throws Exception;
 
-    public UserEntity getUserByUsernameAndPassword(String username, String password) throws Exception {
-        String sql = "SELECT * FROM users WHERE username = ? and password = ?";
-        List list = new BaseDao(connection).selectByParams(sql, UserEntity.class, username, password);
-        return list==null?null:(UserEntity) list.get(0);
-    }
+    /**
+     * 获取审核是否通过的user
+     * @param state 状态
+     * @return 返回值
+     * @throws Exception 异常
+     */
+    List<UserEntity> getUsersByState(int state) throws Exception;
 
-    public List<UserEntity> getUsersByState(int state) throws Exception {
-        String sql=new SQLBuilder("users").select("*").where("state").buildSelect();
-        return new BaseDao(connection).selectByParams(sql, UserEntity.class,state);
-    }
+    /**
+     * 设置user的状态
+     * @param userId id
+     * @param state 设置的状态
+     * @throws SQLException 异常
+     * @throws InterruptedException 异常
+     */
+    void setUserState(int userId, int state) throws SQLException, InterruptedException;
 
-    public void setUserState(int userId, int state) throws SQLException, InterruptedException {
-        String sql="update users set state=? where id=?";
-        new BaseDao(connection).updateCommon(sql,state,userId);
-    }
+    /**
+     * 设置user的权限等级
+     * @param id userid
+     * @param authorityId 权限等级
+     * @throws SQLException 异常
+     * @throws InterruptedException 异常
+     */
+    void setUserAuthorityId(int id, int authorityId) throws SQLException, InterruptedException;
+
+    /**
+     * 修改电动车
+     * @param id userid
+     * @param electromobileModel 电动车型号
+     * @param electromobileNumber 电动车牌号
+     * @throws SQLException 异常
+     * @throws InterruptedException 异常
+     */
+    void alterMobile(Integer id, String electromobileModel, String electromobileNumber) throws SQLException, InterruptedException;
 }

@@ -1,34 +1,48 @@
 package com.HuangTaiQi.www.dao;
 
 import com.HuangTaiQi.www.po.AdminEntity;
-import com.HuangTaiQi.www.utils.SQLBuilder;
+import com.HuangTaiQi.www.po.ChargingPileEntity;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-public class AdminDao {
-    private final Connection connection;
+/**
+ * 管理员
+ * @author 14629
+ */
+public interface AdminDao {
+    /**
+     * 通过username查询管理员
+     * @param username 账号
+     * @return 管理员对象
+     * @throws Exception 异常
+     */
+    public AdminEntity selectByUsername(String username) throws Exception;
 
-    public AdminDao(Connection connection) {
-        this.connection = connection;
-    }
+    /**
+     * 新增管理员
+     * @param admin 管理员对象
+     * @throws SQLException 异常
+     * @throws InterruptedException 异常
+     */
+    public void add(AdminEntity admin) throws SQLException, InterruptedException;
 
-    public AdminEntity selectByUsername(String username) throws Exception {
-        String sql=new SQLBuilder("admin").select("*").where("username").buildSelect();
-        List list = new BaseDao(connection).selectByParams(sql, AdminEntity.class, username);
-        return list==null?null:(AdminEntity) list.get(0);
+    /**
+     * 通过账号密码查询管理员，登录
+     * @param username 账号
+     * @param password 密码
+     * @return 管理员对象
+     * @throws Exception 异常
+     */
+    public AdminEntity getAdminByUsernameAndPassword(String username, String password) throws Exception;
 
-    }
+    /**
+     * 改密码
+     * @param username 账号
+     * @param next 改后的密码
+     * @throws SQLException 异常
+     */
+    public void changePassword(String username, String next) throws SQLException;
 
-    public synchronized void add(AdminEntity admin) throws SQLException, InterruptedException {
-        String sql=new SQLBuilder("admin").insert("username").insert("password").buildInsert();
-        new BaseDao(connection).updateCommon(sql,admin.getUsername(),admin.getPassword());
-    }
 
-    public AdminEntity getAdminByUsernameAndPassword(String username, String password) throws Exception {
-        String sql=new SQLBuilder("admin").select("*").where("username").where("password").buildSelect();
-        List list = new BaseDao(connection).selectByParams(sql, AdminEntity.class, username, password);
-        return list==null?null:(AdminEntity) list.get(0);
-    }
 }

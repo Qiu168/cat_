@@ -1,4 +1,4 @@
-package com.HuangTaiQi.www.dao;
+package com.HuangTaiQi.www.dao.impl;
 
 
 
@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -19,7 +18,7 @@ public class BaseDao {
         this.connection = connection;
     }
 
-    private final Logger logger = Logger.getLogger("com.HuangTaiQi.www.utils.BaseDao");
+
     /**
      *
      * @param sql sql
@@ -28,9 +27,8 @@ public class BaseDao {
      * @return sql查询的所有结果
      * @throws Exception 让调用者知道有异常
      */
-    public List selectByParams(String sql, Class cls, Object... params) throws Exception {
-        List list=new ArrayList<>();
-//        Connection connection = ConnectionPoolManager.getConnection();
+    public <T> List<T> selectByParams(String sql, Class<T> cls, Object... params) throws Exception {
+        List<T> list = new ArrayList<>();
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
         //填sql
         for(int i=1;i<=params.length;i++){
@@ -47,10 +45,10 @@ public class BaseDao {
                 Object object = resultSet.getObject(1);
                 Long l= (Long) object;
                 int ii = l.intValue();
-                list.add(ii);
+                list.add(cls.cast(ii));
                 return list;
             }
-            Object t=cls.newInstance();
+            T t=cls.newInstance();
             for(int i=1;i<=columnCount;i++){
                 //现在要往t里填参数
                 //列名Label可以获取别名
@@ -65,7 +63,6 @@ public class BaseDao {
             }
             list.add(t);
         }
-        //ConnectionPoolManager.closeConnection(connection);
         return list.size()==0?null:list;
     }
     private String getFieldName(String name){
@@ -83,25 +80,16 @@ public class BaseDao {
     }
 
     /**
-     *
      * @param sql 修改的sql
      * @param args 参数
-     * @return 1成功 0失败
-     * @throws SQLException 异常
      */
-    public boolean updateCommon(String sql, Object ...args) throws SQLException, InterruptedException {
-        //Connection conn = ConnectionPoolManager.getConnection();
+    public void updateCommon(String sql, Object ...args) throws SQLException {
         PreparedStatement ps = null;
-        boolean execute = false;
-        try {
-            ps = connection.prepareStatement(sql);
-            for (int i = 0; i < args.length; i++) {
-                ps.setObject(i+1,args[i]);
-            }
-            execute = ps.execute();
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "msg: e=" + e.getMessage());
+        ps = connection.prepareStatement(sql);
+        for (int i = 0; i < args.length; i++) {
+            ps.setObject(i+1,args[i]);
         }
-        return execute;
+        ps.execute();
+
     }
 }

@@ -1,27 +1,35 @@
 package com.HuangTaiQi.www.controller;
 
-import javax.servlet.*;
-import javax.servlet.annotation.*;
-import javax.servlet.http.*;
+
+
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author 14629
  * 获取域名最后的方法名，通过反射调用方法
  */
-public class BaseServlet extends HttpServlet {
-    @Override
-    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String uri = req.getRequestURI();
-        String methodName = uri.substring(uri.lastIndexOf('/') + 1);
-        Class<? extends BaseServlet> cls = this.getClass();
+public class BaseServlet  {
+    protected <T> void handleException(Class<T> cls, Exception e){
+        Logger logger=Logger.getLogger(cls.getName());
         try {
-            Method method=cls.getMethod(methodName,HttpServletRequest.class,HttpServletResponse.class);
-            method.invoke(this,req,resp);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            throw new RuntimeException(e);
+            // 判断异常类型
+            if (e instanceof SQLException) {
+                if (e.getMessage().contains("doesn't exist")) {
+                    logger.log(Level.WARNING,"file not find An error occurred in "+cls.getName()+" e = {0}", e.getMessage());
+                }
+            } else if (e instanceof IOException) {
+                // 处理 IO 异常
+                logger.log(Level.WARNING,"An error occurred in "+cls.getName()+" e = {0}", e.getMessage());
+            } else {
+                logger.log(Level.WARNING,"An error occurred in "+cls.getName()+" e = {0}", e.getMessage());
+            }
+        } catch (Exception ex) {
+            // 处理异常时出现异常
+            logger.log(Level.WARNING,"An error occurred in "+cls.getName()+" e = {0}", e.getMessage());
         }
     }
+
 }

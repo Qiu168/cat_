@@ -1,7 +1,10 @@
 package com.HuangTaiQi.www.po;
 
+/**
+ * @author 14629
+ */
 public class UserEntity {
-    private int id;
+    private Integer id;
     private String studentNumber;
     private String name;
     private String username;
@@ -10,6 +13,12 @@ public class UserEntity {
     private String electromobileNumber;
     private Integer state;
     private Integer authorityId;
+    public static int FORBID=0;
+    public static int FREE=1;
+    public static int CHARGING=2;
+    public static int PARKING=3;
+
+
 
     public Integer getAuthorityId() {
         return authorityId;
@@ -27,11 +36,11 @@ public class UserEntity {
         this.state = state;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

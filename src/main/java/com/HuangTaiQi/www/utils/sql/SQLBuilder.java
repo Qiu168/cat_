@@ -1,4 +1,4 @@
-package com.HuangTaiQi.www.utils;
+package com.HuangTaiQi.www.utils.sql;
 
 import java.util.ArrayList;
 import java.util.List;
