@@ -1,5 +1,8 @@
 package com.HuangTaiQi.www.po;
 
+/**
+ * @author 14629
+ */
 public class UserEntity {
     private Integer id;
     private String studentNumber;
@@ -8,8 +11,13 @@ public class UserEntity {
     private String password;
     private String electromobileModel;
     private String electromobileNumber;
-    private Boolean state;
+    private Integer state;
     private Integer authorityId;
+    public static int FORBID=0;
+    public static int FREE=1;
+    public static int CHARGING=2;
+    public static int PARKING=3;
+
 
 
     public Integer getAuthorityId() {
@@ -20,11 +28,11 @@ public class UserEntity {
         this.authorityId = authorityId;
     }
 
-    public Boolean getState() {
+    public Integer getState() {
         return state;
     }
 
-    public void setState(Boolean state) {
+    public void setState(Integer state) {
         this.state = state;
     }
 
