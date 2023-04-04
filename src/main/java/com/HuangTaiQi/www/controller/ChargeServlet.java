@@ -1,17 +1,18 @@
 package com.HuangTaiQi.www.controller;
 
+import com.HuangTaiQi.www.po.ChargingPileBean;
 import com.HuangTaiQi.www.po.ChargingPileEntity;
 import com.HuangTaiQi.www.po.ChargingStationEntity;
-import com.HuangTaiQi.www.service.ChargeService;
+import com.HuangTaiQi.www.service.impl.ChargeServiceImpl;
 
 import java.sql.SQLException;
 import java.util.List;
 
 public class ChargeServlet extends BaseServlet{
-    ChargeService chargeService=new ChargeService();
+    ChargeServiceImpl chargeServiceImpl =new ChargeServiceImpl();
     public List<ChargingStationEntity> showChargingStation() {
         try {
-            return new ChargeService().getChargingStations();
+            return new ChargeServiceImpl().getChargingStations();
         } catch (Exception e) {
             handleException(ChargeServlet.class,e);
         }
@@ -20,7 +21,7 @@ public class ChargeServlet extends BaseServlet{
 
     public void updateChargingStation(int stationId, String location, String name, int open, int close) {
         try {
-            chargeService.updateChargingStation(stationId,location,name,open,close);
+            chargeServiceImpl.updateChargingStation(stationId,location,name,open,close);
         } catch (SQLException | InterruptedException e) {
             handleException(ChargeServlet.class, e);
         }
@@ -28,7 +29,7 @@ public class ChargeServlet extends BaseServlet{
 
     public void deleteChargingStation(int stationId) {
         try {
-            chargeService.deleteChargingStationById(stationId);
+            chargeServiceImpl.deleteChargingStationById(stationId);
         } catch (SQLException | InterruptedException e) {
             handleException(ChargeServlet.class,e);
         }
@@ -36,7 +37,7 @@ public class ChargeServlet extends BaseServlet{
 
     public void addChargingStation(String location, String name, int open, int close) {
         try {
-            chargeService.addChargingStation(location,name,open,close);
+            chargeServiceImpl.addChargingStation(location,name,open,close);
         } catch (SQLException | InterruptedException e) {
             handleException(ChargeServlet.class,e);
         }
@@ -44,7 +45,7 @@ public class ChargeServlet extends BaseServlet{
 
     public List<ChargingPileEntity> showChargingPiles(int stationId) {
         try {
-            return chargeService.getChargingPilesByStationId(stationId);
+            return chargeServiceImpl.getChargingPilesByStationId(stationId);
         } catch (Exception e) {
             handleException(ChargeServlet.class,e);
         }
@@ -53,7 +54,7 @@ public class ChargeServlet extends BaseServlet{
 
     public void setPileState(int pileId, int state)  {
         try {
-            chargeService.setPileState(pileId,state);
+            chargeServiceImpl.setPileState(pileId,state);
         } catch (SQLException | InterruptedException e) {
             handleException(ChargeServlet.class,e);
         }
@@ -61,7 +62,7 @@ public class ChargeServlet extends BaseServlet{
 
     public void deleteChargingPile(int pileId) {
         try {
-            chargeService.deleteChargingPileById(pileId);
+            chargeServiceImpl.deleteChargingPileById(pileId);
         } catch (SQLException | InterruptedException e) {
             handleException(ChargeServlet.class,e);
         }
@@ -69,9 +70,33 @@ public class ChargeServlet extends BaseServlet{
 
     public void addChargingPile(int stationId) {
         try {
-            chargeService.addChargingPile(stationId);
+            chargeServiceImpl.addChargingPile(stationId);
         } catch (SQLException | InterruptedException e) {
             handleException(ChargeServlet.class,e);
         }
+    }
+
+    /**
+     * 某时间段可以使用的充电桩
+     * @param stationId 充电站id
+     * @param hour hour
+     */
+    public List<ChargingPileBean> showFreePile(int stationId, int hour) {
+        try {
+            chargeServiceImpl.getFreePile(stationId,hour);
+        } catch (Exception e) {
+            handleException(ChargeServlet.class,e);
+        }
+        return null;
+    }
+
+
+    public boolean usePile(Integer id, ChargingPileBean pile, int hour, int useTime) {
+        try {
+            chargeServiceImpl.setPileTime(id,pile,hour,useTime);
+        } catch (Exception e) {
+            handleException(ChargeServlet.class,e);
+        }
+        return false;
     }
 }

@@ -1,7 +1,7 @@
 package com.HuangTaiQi.www.controller;
 
 import com.HuangTaiQi.www.po.AdminEntity;
-import com.HuangTaiQi.www.service.AdminService;
+import com.HuangTaiQi.www.service.impl.AdminServiceImpl;
 
 public class AdminServlet extends BaseServlet{
     private final String KEY="123";
@@ -10,7 +10,7 @@ public class AdminServlet extends BaseServlet{
         if(KEY.equals(key)){
             //生成账号密码。
             try {
-                return new AdminService().createAdminAccount();
+                return new AdminServiceImpl().createAdminAccount();
             } catch (Exception e) {
                 handleException(AdminServlet.class,e);
             }
@@ -19,7 +19,7 @@ public class AdminServlet extends BaseServlet{
     }
     public AdminEntity login(String username,String password){
         try {
-            return new AdminService().login(username,password);
+            return new AdminServiceImpl().login(username,password);
         } catch (Exception e) {
             handleException(AdminServlet.class,e);
         }
@@ -28,7 +28,7 @@ public class AdminServlet extends BaseServlet{
 
     public boolean ChangePassword(Integer id, String origin, String next) {
         try {
-            return new AdminService().changePassword(id,origin,next);
+            return new AdminServiceImpl().changePassword(id,origin,next);
         } catch (Exception e) {
             handleException(AdminServlet.class,e);
         }

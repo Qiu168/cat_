@@ -2,16 +2,16 @@ package com.HuangTaiQi.www.controller;
 
 import com.HuangTaiQi.www.po.ParkingLotEntity;
 import com.HuangTaiQi.www.po.ParkingSpotEntity;
-import com.HuangTaiQi.www.service.ParkService;
+import com.HuangTaiQi.www.service.impl.ParkServiceImpl;
 
 import java.sql.SQLException;
 import java.util.List;
 
 public class ParkServlet extends BaseServlet{
-    private final ParkService parkService=new ParkService();
+    private final ParkServiceImpl parkServiceImpl =new ParkServiceImpl();
     public List<ParkingLotEntity> showParkingLot() {
         try {
-            return parkService.getParkingLots();
+            return parkServiceImpl.getParkingLots();
         } catch (Exception e) {
             handleException(ParkServlet.class,e);
         }
@@ -20,7 +20,7 @@ public class ParkServlet extends BaseServlet{
 
     public Boolean addParkingLot(String location, String name) {
         try {
-            parkService.addParkingLot(location,name);
+            parkServiceImpl.addParkingLot(location,name);
             return true;
         } catch (SQLException | InterruptedException e) {
             handleException(ParkServlet.class,e);
@@ -30,7 +30,7 @@ public class ParkServlet extends BaseServlet{
 
     public List<ParkingSpotEntity> showParkingSpot(int lotId) {
         try {
-            return parkService.getParkingSpots(lotId);
+            return parkServiceImpl.getParkingSpots(lotId);
         } catch (Exception e) {
             handleException(ParkServlet.class,e);
         }
@@ -39,7 +39,7 @@ public class ParkServlet extends BaseServlet{
 
     public void deleteSpot(int spotId) {
         try {
-            parkService.deleteSpot(spotId);
+            parkServiceImpl.deleteSpot(spotId);
         } catch (SQLException | InterruptedException e) {
             handleException(ParkServlet.class,e);
         }
@@ -47,7 +47,7 @@ public class ParkServlet extends BaseServlet{
 
     public void setSpotState(int spotId, int state) {
         try {
-            parkService.setSpotState(spotId,state);
+            parkServiceImpl.setSpotState(spotId,state);
         } catch (SQLException | InterruptedException e) {
             handleException(ParkServlet.class,e);
         }
@@ -55,7 +55,7 @@ public class ParkServlet extends BaseServlet{
 
     public void deleteLot(int lotId) {
         try {
-            parkService.deleteLot(lotId);
+            parkServiceImpl.deleteLot(lotId);
         } catch (SQLException | InterruptedException e) {
             handleException(ParkServlet.class,e);
         }
@@ -63,7 +63,7 @@ public class ParkServlet extends BaseServlet{
 
     public void alterLot(int lotId, String location, String name) {
         try {
-            parkService.alterLot(lotId,location,name);
+            parkServiceImpl.alterLot(lotId,location,name);
         } catch (SQLException | InterruptedException e) {
             handleException(ParkServlet.class,e);
         }
@@ -71,7 +71,7 @@ public class ParkServlet extends BaseServlet{
 
     public void addParkingSpot(int lotId) {
         try {
-            parkService.addParkingSpot(lotId);
+            parkServiceImpl.addParkingSpot(lotId);
         } catch (SQLException | InterruptedException e) {
             handleException(ParkServlet.class,e);
         }
@@ -79,7 +79,7 @@ public class ParkServlet extends BaseServlet{
 
     public void setSpotStateByState(Integer userId, int state) {
         try {
-            parkService.setSpotStateByState(userId,state);
+            parkServiceImpl.setSpotStateByState(userId,state);
         } catch (SQLException | InterruptedException e) {
             handleException(ParkServlet.class,e);
         }
