@@ -12,9 +12,9 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class ChargeDaoImpl implements ChargeDao {
-    private final Connection connection= DBUtil.getConnection();
+    private static final Connection connection= DBUtil.getConnection();
 
-    BaseDao baseDao=new BaseDao(connection);
+    static BaseDao baseDao=new BaseDao(connection);
 
     public List<ChargingStationEntity> getChargingStations() throws Exception {
         String sql=new SQLBuilder("chargingstation").select("*").buildSelect();
@@ -94,4 +94,18 @@ public class ChargeDaoImpl implements ChargeDao {
                 pileSituation.get(17),
                 pile.getId());
     }
+
+    public ChargingPileEntity getPileById(int pileId) throws Exception {
+        String sql=new SQLBuilder("chargingpile").select("*").where("id").buildSelect();
+        List<ChargingPileEntity> list = baseDao.selectByParams(sql, ChargingPileEntity.class, pileId);
+        return list == null ? null : list.get(0);
+    }
+    public static void refresh() throws SQLException {
+        String sql="update chargingpile set six_seven=?,seven_eight=?,eight_nine=?,nine_ten=?,ten_eleven=?," +
+                "eleven_twelve=?,twelve_thirteen=?,thirteen_fourteen=?,fourteen_fifteen=?,fifteen_sixteen=?," +
+                "sixteen_seventeen=?,seventeen_eighteen=?,eighteen_nineteen=?,nineteen_twenty=?,twenty_twenty_one=?" +
+                ",t_one_two=?,t_two_three=?,t_three_four=? ";
+        baseDao.updateCommon(sql, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    }
+
 }

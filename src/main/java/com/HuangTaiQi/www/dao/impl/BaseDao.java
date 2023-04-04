@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -19,7 +18,7 @@ public class BaseDao {
         this.connection = connection;
     }
 
-    private final Logger logger = Logger.getLogger("com.HuangTaiQi.www.utils.BaseDao");
+
     /**
      *
      * @param sql sql
@@ -81,7 +80,6 @@ public class BaseDao {
     }
 
     /**
-     *
      * @param sql 修改的sql
      * @param args 参数
      */

@@ -45,7 +45,4 @@ public interface AdminDao {
     public void changePassword(String username, String next) throws SQLException;
 
 
-
-
-
 }
