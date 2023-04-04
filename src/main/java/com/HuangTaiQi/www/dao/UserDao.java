@@ -2,7 +2,7 @@ package com.HuangTaiQi.www.dao;
 
 import com.HuangTaiQi.www.po.UserEntity;
 import com.HuangTaiQi.www.utils.DBUtil;
-import com.HuangTaiQi.www.utils.SQLBuilder;
+import com.HuangTaiQi.www.utils.sql.SQLBuilder;
 
 import java.sql.*;
 import java.util.List;
@@ -77,7 +77,7 @@ public class UserDao {
     }
 
     public void alterMobile(Integer id, String electromobileModel, String electromobileNumber) throws SQLException, InterruptedException {
-        String sql="update users set electromobile_model=?,electromobile_number=?，set state=0 where id=?";
+        String sql="update users set electromobile_model=?,electromobile_number=?, state=0 where id=?";
         baseDao.updateCommon(sql,electromobileModel,electromobileNumber,id);
     }
 }
