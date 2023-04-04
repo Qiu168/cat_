@@ -1,24 +1,23 @@
 package com.HuangTaiQi.www.dao;
 
+import com.HuangTaiQi.www.po.ChargingPileBean;
 import com.HuangTaiQi.www.po.ChargingPileEntity;
 import com.HuangTaiQi.www.po.ChargingStationEntity;
+import com.HuangTaiQi.www.utils.DBUtil;
 import com.HuangTaiQi.www.utils.SQLBuilder;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-public class ChargeDao extends BaseDao{
-    private Connection connection;
+public class ChargeDao {
+    private final Connection connection= DBUtil.getConnection();
 
-    public ChargeDao(Connection connection) {
-        super(connection);
-        this.connection = connection;
-    }
+    BaseDao baseDao=new BaseDao(connection);
 
     public List<ChargingStationEntity> getChargingStations() throws Exception {
         String sql=new SQLBuilder("chargingstation").select("*").buildSelect();
-        return selectByParams(sql, ChargingStationEntity.class);
+        return baseDao.selectByParams(sql, ChargingStationEntity.class);
     }
 
     public void addChargingStation(String location, String name, int open, int close) throws SQLException, InterruptedException {
@@ -28,42 +27,69 @@ public class ChargeDao extends BaseDao{
                 .insert("open")
                 .insert("close")
                 .buildInsert();
-        updateCommon(sql,location,name,open,close);
+        baseDao.updateCommon(sql,location,name,open,close);
 
     }
 
     public void updateChargingStation(int stationId, String location, String name, int open, int close) throws SQLException, InterruptedException {
         String sql="update chargingstation set location=?,name=?,open=?,close=? where id=?";
-        updateCommon(sql,location,name,open,close,stationId);
+        baseDao.updateCommon(sql,location,name,open,close,stationId);
     }
 
     public void deleteChargingStationById(int stationId) throws SQLException, InterruptedException {
         String sql="delete from chargingstation where id=?";
-        updateCommon(sql,stationId);
+        baseDao.updateCommon(sql,stationId);
     }
 
     public List<ChargingPileEntity> getChargingPilesByStationId(int stationId) throws Exception {
         String sql=new SQLBuilder("chargingpile").select("*").where("station_id").buildSelect();
-        return selectByParams(sql, ChargingPileEntity.class,stationId);
+        return baseDao.selectByParams(sql, ChargingPileEntity.class,stationId);
     }
 
     public void deleteChargingPileByStationId(int stationId) throws SQLException, InterruptedException {
         String sql="delete from chargingpile where station_id=?";
-        updateCommon(sql,stationId);
+        baseDao.updateCommon(sql,stationId);
     }
 
     public void setPileState(int pileId, int state) throws SQLException, InterruptedException {
         String sql="update chargingpile set state=? where id=?";
-        updateCommon(sql,state,pileId);
+        baseDao.updateCommon(sql,state,pileId);
     }
 
     public void deleteChargingPileById(int pileId) throws SQLException, InterruptedException {
         String sql="delete from chargingpile where id=?";
-        updateCommon(sql,pileId);
+        baseDao.updateCommon(sql,pileId);
     }
 
     public void addChargingPile(int stationId) throws SQLException, InterruptedException {
         String sql="insert into chargingpile(station_id) values(?)";
-        updateCommon(sql,stationId);
+        baseDao.updateCommon(sql,stationId);
+    }
+
+    public void setPileTime(ChargingPileBean pile) throws SQLException, InterruptedException {
+        String sql="update chargingpile(six_seven,seven_eight,eight_nine,nine_ten,ten_eleven," +
+                "eleven_twelve,twelve_thirteen,thirteen_fourteen,fourteen_fifteen,fifteen_sixteen," +
+                "sixteen_seventeen,seventeen_eighteen,eighteen_nineteen,nineteen_twenty,twenty_twenty_one" +
+                ",t_one_two,t_two_three,t_three_four) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        List<Integer> pileSituation = pile.getPileSituation();
+        baseDao.updateCommon(sql,
+                pileSituation.get(0),
+                pileSituation.get(1),
+                pileSituation.get(2),
+                pileSituation.get(3),
+                pileSituation.get(4),
+                pileSituation.get(5),
+                pileSituation.get(6),
+                pileSituation.get(7),
+                pileSituation.get(8),
+                pileSituation.get(9),
+                pileSituation.get(10),
+                pileSituation.get(11),
+                pileSituation.get(12),
+                pileSituation.get(13),
+                pileSituation.get(14),
+                pileSituation.get(15),
+                pileSituation.get(16),
+                pileSituation.get(17));
     }
 }
