@@ -16,6 +16,15 @@ public class UserDaoImpl implements UserDao {
 
     BaseDao baseDao=new BaseDao(connection);
 
+    private static UserDaoImpl instance;
+    private UserDaoImpl (){}
+    public static synchronized UserDaoImpl getInstance() {
+        if (instance == null) {
+            instance = new UserDaoImpl();
+        }
+        return instance;
+    }
+
 
     public synchronized void addUser(UserEntity user) throws SQLException {
         String sql = "INSERT INTO users (student_number, name, username, password, electromobile_model, electromobile_number,state,authority_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -24,8 +33,6 @@ public class UserDaoImpl implements UserDao {
     }
 
     public void deleteUserById(int id) throws SQLException, InterruptedException {
-//        String sql="select * from users where id=? by update";
-//        baseDao.selectByParams(sql,UserEntity.class,id);
         String sql = "DELETE FROM users WHERE id = ?";
         baseDao.updateCommon(sql,id);
     }
@@ -67,7 +74,7 @@ public class UserDaoImpl implements UserDao {
 
     public List<UserEntity> getUsersByState(int state) throws Exception {
         String sql=new SQLBuilder("users").select("*").where("state").buildSelect();
-        return baseDao.selectByParams(sql, UserEntity.class,state);
+        return baseDao.selectByParams(sql, UserEntity.class , state);
     }
 
     public void setUserState(int userId, int state) throws SQLException, InterruptedException {
@@ -83,5 +90,10 @@ public class UserDaoImpl implements UserDao {
     public void alterMobile(Integer id, String electromobileModel, String electromobileNumber) throws SQLException, InterruptedException {
         String sql="update users set electromobile_model=?,electromobile_number=?, state=0 where id=?";
         baseDao.updateCommon(sql,electromobileModel,electromobileNumber,id);
+    }
+
+    public List<UserEntity> getUsersByStateNot(int forbid) throws Exception {
+        String sql="SELECT * FROM users WHERE state !=?";
+        return baseDao.selectByParams(sql, UserEntity.class, forbid);
     }
 }

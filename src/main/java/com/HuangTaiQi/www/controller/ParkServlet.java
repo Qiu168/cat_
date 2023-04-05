@@ -12,6 +12,14 @@ import java.util.List;
  */
 public class ParkServlet extends BaseServlet{
     private final ParkServiceImpl parkServiceImpl =new ParkServiceImpl();
+    private static ParkServlet instance;
+    private ParkServlet (){}
+    public static synchronized ParkServlet getInstance() {
+        if (instance == null) {
+            instance = new ParkServlet();
+        }
+        return instance;
+    }
     public List<ParkingLotEntity> showParkingLot() {
         try {
             return parkServiceImpl.getParkingLots();

@@ -101,9 +101,4 @@ public interface ChargeDao {
      */
     List<ChargingPileEntity> getChargingPilesByStationId(int stationId) throws Exception;
 
-    /**
-     * 0点刷新充电桩的使用情况，全部设为空闲
-     * @throws SQLException 异常
-     */
-    static void refresh() throws SQLException{}
 }

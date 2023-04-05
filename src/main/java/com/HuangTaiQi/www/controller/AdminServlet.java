@@ -10,6 +10,15 @@ import com.HuangTaiQi.www.service.impl.AdminServiceImpl;
 public class AdminServlet extends BaseServlet{
     private final String KEY="123";
     private final AdminService adminService=new AdminServiceImpl();
+    private static AdminServlet instance;
+    private AdminServlet (){}
+    public static synchronized AdminServlet getInstance() {
+        if (instance == null) {
+            instance = new AdminServlet();
+        }
+        return instance;
+    }
+
     public AdminEntity register(String key) {
         //想怎么操作？，可以从数据库拿？可以加密？这里就简单写写了。
         if(KEY.equals(key)){

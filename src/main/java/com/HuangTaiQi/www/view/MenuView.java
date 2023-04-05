@@ -6,6 +6,9 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * @author 14629
+ */
 public class MenuView {
     private final Logger logger=Logger.getLogger(MenuView.class.getName());
     private final Scanner scanner=new Scanner(System.in);
@@ -15,11 +18,11 @@ public class MenuView {
     private final UserView userView=new UserView();
     public void studentMenu(UserEntity user){
         LocalDateTime now = LocalDateTime.now();
-        System.out.println("0立刻充电,1预约充电,2停车,3离开停车场，4修改电动车型号,5评论充电桩,6退出");
+        System.out.println("0立刻充电,1预约充电,2完成充电（离开充电站）,3停车,4离开停车场，5修改电动车型号,6评论充电桩,7退出");
         switch (scanner.nextInt()){
             case 0:
                 if(user.getState()==UserEntity.CHARGING){
-                    System.out.println("您的电动车以在充电");
+                    System.out.println("您的电动车已在充电");
                     break;
                 }
                 //立刻充电
@@ -32,7 +35,7 @@ public class MenuView {
                 break;
             case 1:
                 if(user.getState()==UserEntity.CHARGING){
-                    System.out.println("您的电动车以在充电");
+                    System.out.println("您的电动车已在充电");
                     break;
                 }
                 //预约充电
@@ -52,6 +55,14 @@ public class MenuView {
                 }
                 break;
             case 2:
+                //离开充电
+                if(user.getState() != UserEntity.CHARGING){
+                    System.out.println("您还未充电");
+                    break;
+                }
+                chargeView.left(user);
+                break;
+            case 3:
                 //停车
                 if(user.getAuthorityId()==AuthorityEntity.CHARGE||user.getAuthorityId()==AuthorityEntity.CANT_DO_EVERYTHING){
                     System.out.println("对不起您没有权限停车");
@@ -59,26 +70,22 @@ public class MenuView {
                 }
                 parkView.park(user);
                 break;
-            case 4:
+            case 5:
                 //修改电动车型号
                 userView.modifyElectromobile(user.getId());
                 return;
-            case 3:
+            case 4:
                 if(user.getState()!=UserEntity.PARKING){
                     System.out.println("您还未停车");
                     break;
                 }
                 //离开停车场
-                if(user.getAuthorityId()==AuthorityEntity.CHARGE||user.getAuthorityId()==AuthorityEntity.CANT_DO_EVERYTHING){
-                    System.out.println("对不起您没有权限停车");
-                    break;
-                }
                 parkView.left(user);
                 break;
-            case 5:
+            case 6:
                 chargeView.comment(user);
                 break;
-            case 6:
+            case 7:
                 return;
             default:
                 logger.log(Level.WARNING,"UNDEFINE INPUT ");

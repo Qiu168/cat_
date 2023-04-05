@@ -17,6 +17,15 @@ public class CommentDaoImpl implements CommentDao {
     private final Connection connection= DBUtil.getConnection();
 
     BaseDao baseDao=new BaseDao(connection);
+    private static CommentDaoImpl instance;
+    private CommentDaoImpl (){}
+    public static synchronized CommentDaoImpl getInstance() {
+        if (instance == null) {
+            instance = new CommentDaoImpl();
+        }
+        return instance;
+    }
+
     @Override
     public List<CommentEntity> getCommentsByPileId(int pileId) throws Exception {
         String sql=new SQLBuilder("comment").select("*").where("pile_id").buildSelect();

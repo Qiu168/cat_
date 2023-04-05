@@ -15,6 +15,7 @@ import java.util.List;
  * @author 14629
  */
 public class UserServiceImpl implements UserService {
+    UserDaoImpl userDaoImpl = UserDaoImpl.getInstance();
 
     /**
      * 新增user
@@ -41,7 +42,6 @@ public class UserServiceImpl implements UserService {
         user.setAuthorityId(1);
         DBUtil.beginTransaction();
         try {
-            UserDaoImpl userDaoImpl = new UserDaoImpl();
             //还可以加studentNumber，学号唯一之类的。
             UserEntity userByUsername = userDaoImpl.getUserByUsername(username);
             if(userByUsername==null){
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
      * @throws Exception 异常
      */
     public UserEntity login(String username, String password) throws Exception {
-        UserEntity userByUsernameAndPassword = new UserDaoImpl().getUserByUsernameAndPassword(username, Md5Utils.encode(password));
+        UserEntity userByUsernameAndPassword = userDaoImpl.getUserByUsernameAndPassword(username, Md5Utils.encode(password));
         DBUtil.close();
         if( userByUsernameAndPassword != null && userByUsernameAndPassword.getState()!=0){
             return userByUsernameAndPassword;
@@ -82,22 +82,21 @@ public class UserServiceImpl implements UserService {
      * @throws Exception 异常
      */
     public List<UserEntity> showAuditUser() throws Exception {
-        List<UserEntity> usersWhereStateZero = new UserDaoImpl().getUsersByState(0);
+        List<UserEntity> usersWhereStateZero = userDaoImpl.getUsersByState(0);
         DBUtil.close();
         return usersWhereStateZero;
     }
 
     /**
      * 将用户的状态设值。用于审核通过用户
-     * @param UserId 通过的用户id
+     * @param userId 通过的用户id
      * @param state 状态
      * @throws SQLException 异常
-     * @throws InterruptedException 异常
      */
-    public void pass(int UserId,int state) throws SQLException, InterruptedException {
+    public void setUserState(int userId, int state) throws SQLException {
         DBUtil.beginTransaction();
         try {
-            new UserDaoImpl().setUserState(UserId,state);
+            userDaoImpl.setUserState(userId,state);
         } catch (SQLException | InterruptedException e) {
             DBUtil.rollbackTransaction();
             throw new RuntimeException(e);
@@ -112,7 +111,7 @@ public class UserServiceImpl implements UserService {
      * @throws Exception 异常
      */
     public List<UserEntity> showAuditedUser() throws Exception {
-        List<UserEntity> usersWhereStateOne = new UserDaoImpl().getUsersByState(1);
+        List<UserEntity> usersWhereStateOne = userDaoImpl.getUsersByStateNot(UserEntity.FORBID);
         DBUtil.close();
         return usersWhereStateOne;
     }
@@ -126,7 +125,7 @@ public class UserServiceImpl implements UserService {
     public void deleteById(int id) throws SQLException, InterruptedException {
         DBUtil.beginTransaction();
         try {
-            new UserDaoImpl().deleteUserById(id);
+            userDaoImpl.deleteUserById(id);
         } catch (SQLException | InterruptedException e) {
             DBUtil.rollbackTransaction();
             throw new RuntimeException(e);
@@ -145,7 +144,7 @@ public class UserServiceImpl implements UserService {
     public void setAuthority(int id, int authorityId) throws SQLException, InterruptedException {
         DBUtil.beginTransaction();
         try {
-            new UserDaoImpl().setUserAuthorityId(id,authorityId);
+            userDaoImpl.setUserAuthorityId(id,authorityId);
         } catch (SQLException | InterruptedException e) {
             DBUtil.rollbackTransaction();
             throw new RuntimeException(e);
@@ -164,7 +163,6 @@ public class UserServiceImpl implements UserService {
      */
     public void alterMobile(Integer id, String electromobileModel, String electromobileNumber) throws SQLException, InterruptedException {
         DBUtil.beginTransaction();
-        UserDaoImpl userDaoImpl = new UserDaoImpl();
         try {
             userDaoImpl.alterMobile(id,electromobileModel,electromobileNumber);
         } catch (SQLException | InterruptedException e) {

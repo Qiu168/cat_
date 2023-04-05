@@ -1,6 +1,7 @@
 package com.HuangTaiQi.www.view;
 
 import com.HuangTaiQi.www.controller.ParkServlet;
+import com.HuangTaiQi.www.controller.UserServlet;
 import com.HuangTaiQi.www.po.ParkingLotEntity;
 import com.HuangTaiQi.www.po.ParkingSpotEntity;
 import com.HuangTaiQi.www.po.UserEntity;
@@ -16,8 +17,8 @@ import java.util.logging.Logger;
 public class ParkView {
     private final Logger logger=Logger.getLogger(MenuView.class.getName());
     private final Scanner scanner=new Scanner(System.in);
+    private final ParkServlet parkServlet=ParkServlet.getInstance();
     public void park(UserEntity user){
-        ParkServlet parkServlet=new ParkServlet();
         //选择停车场
         List<ParkingLotEntity> parkingLotEntities = parkServlet.showParkingLot();
         List<Integer> lotIds=new ArrayList<>();
@@ -25,7 +26,7 @@ public class ParkView {
             System.out.println("暂无停车场");
         }else {
             for (ParkingLotEntity parkingLotEntity : parkingLotEntities) {
-                System.out.println(parkingLotEntity);
+                System.out.println(BaseView.showParkingLotEntity(parkingLotEntity));
                 lotIds.add(parkingLotEntity.getId());
             }
             System.out.println("请输入你选择的停车场id");
@@ -39,7 +40,7 @@ public class ParkView {
                     System.out.println("下列是此停车场的空闲停车位");
                     for (ParkingSpotEntity parkingSpotEntity : parkingSpotEntities) {
                         if(parkingSpotEntity.getState()==0){
-                            System.out.println(parkingSpotEntity);
+                            System.out.println(BaseView.showParkingSpotEntity(parkingSpotEntity));
                             spotIds.add(parkingSpotEntity.getId());
                         }
                     }
@@ -65,9 +66,16 @@ public class ParkView {
         //显示出空闲的停车位
         //选择停车位
     }
+
+    /**
+     * 将停车位的状态设置为空闲，将user的状态设置为空闲
+     * @param user user
+     */
     public void left(UserEntity user) {
-        ParkServlet parkServlet=new ParkServlet();
-        parkServlet.setSpotStateByState(user.getId(),0);
+
+        parkServlet.setSpotStateByState(user.getId(),ParkingSpotEntity.FREE);
+        UserServlet userServlet=UserServlet.getInstance();
+        userServlet.alterState(user.getId(), UserEntity.FREE);
         System.out.println("已离开停车位");
         LocalDateTime now = LocalDateTime.now();
         TextLog.add(now.getYear() + "-" + now.getMonthValue() + "-" + now.getDayOfMonth()+
@@ -75,7 +83,6 @@ public class ParkView {
     }
     public void showPark(){
         System.out.println("下面展示所有停车场");
-        ParkServlet parkServlet=new ParkServlet();
         List<ParkingLotEntity> parkingLotEntities = parkServlet.showParkingLot();
         List<Integer> lotIds=new ArrayList<>();
         if(parkingLotEntities==null){

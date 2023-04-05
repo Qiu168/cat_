@@ -5,10 +5,14 @@ import com.HuangTaiQi.www.controller.UserServlet;
 import com.HuangTaiQi.www.po.*;
 
 import java.util.*;
-import java.util.logging.Logger;
 
+
+/**
+ * @author 14629
+ */
 public class UserView {
     private final Scanner scanner=new Scanner(System.in);
+    private final UserServlet userServlet = UserServlet.getInstance();
     public void modifyElectromobile(Integer id) {
         System.out.println("更改电动车后要重新审核 0退出，1继续");
         int input=scanner.nextInt();
@@ -17,7 +21,7 @@ public class UserView {
             String electromobileModel=scanner.next();
             System.out.println("请输入更改后电动车的牌号");
             String electromobileNumber=scanner.next();
-            new UserServlet().alterMobile(id,electromobileModel,electromobileNumber);
+            UserServlet.getInstance().alterMobile(id,electromobileModel,electromobileNumber);
             System.out.println("成功更新");
         }
         //显示当前电动车的型号和牌号
@@ -25,8 +29,8 @@ public class UserView {
         //state=0
     }
     public void showUser(){
-        //显示出所有state=1的用户信息。
-        UserServlet userServlet = new UserServlet();
+        //显示出所有state>0的用户信息。
+
         for (UserEntity user : userServlet.showAuditedUser()) {
             System.out.println(user);
         }
@@ -71,6 +75,5 @@ public class UserView {
             }
         }
     }
-
 
 }
