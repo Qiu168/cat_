@@ -158,9 +158,9 @@ public class ChargeView {
                 System.out.println("0退出，1设置充电桩能否使用，2删除充电桩");
                 int input = scanner.nextInt();
                 if(input==1){
-                    System.out.println("输入-1将其禁用，0将其解禁");
+                    System.out.println("输入0将其禁用，1将其解禁");
                     input = scanner.nextInt();
-                    if(input==-1||input==0){
+                    if(input==0||input==1){
                         chargeServlet.setPileState(pileId,input);
                     }else {
                         System.out.println("?你输错了");

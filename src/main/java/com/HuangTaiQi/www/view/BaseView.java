@@ -37,7 +37,7 @@ public class BaseView {
     public static String showPile(ChargingPileEntity pileById) {
         StringBuilder stringBuilder=new StringBuilder();
         stringBuilder.append("id: ").append(pileById.getId())
-                .append(" 状态：").append(pileById.getState())
+                .append(" 状态：").append(pileById.getState()?"可用":"禁用")
                 .append(" 所属充电站的id").append(pileById.getStationId());
         return stringBuilder.toString();
 
