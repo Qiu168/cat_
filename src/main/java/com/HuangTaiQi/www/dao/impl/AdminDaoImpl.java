@@ -42,7 +42,7 @@ public class AdminDaoImpl implements AdminDao {
     }
 
     public void changePassword(String username, String next) throws SQLException {
-        String sql="uodate admin set password=? where username=?";
+        String sql="update admin set password=? where username=?";
         baseDao.updateCommon(sql,next,username);
     }
 }
