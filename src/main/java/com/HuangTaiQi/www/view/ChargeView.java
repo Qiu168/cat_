@@ -44,7 +44,7 @@ public class ChargeView {
                 return;
             }
             List<ChargingPileBean> chargingPileBeans = chargeServlet.showFreePile(stationId, hour);
-            if(chargingPileBeans.isEmpty()){
+            if(chargingPileBeans==null||chargingPileBeans.isEmpty()){
                 System.out.println("充电站此时没有空闲的充电桩");
                 return;
             }
