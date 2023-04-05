@@ -4,6 +4,8 @@ public class ParkingSpotEntity {
     private Integer id;
     private Integer state;
     private Integer locationId;
+    public static int FREE=0;
+
 
     public Integer getId() {
         return id;
