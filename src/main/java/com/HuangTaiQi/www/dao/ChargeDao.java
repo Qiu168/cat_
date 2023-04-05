@@ -101,4 +101,13 @@ public interface ChargeDao {
      */
     List<ChargingPileEntity> getChargingPilesByStationId(int stationId) throws Exception;
 
+    /**
+     * 通过id查询pile
+     * @param pileId id
+     * @return 充电桩对象
+     * @throws Exception 异常
+     */
+    ChargingPileEntity getPileById(int pileId) throws Exception;
+
+
 }
