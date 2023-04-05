@@ -21,7 +21,7 @@ public class AdminView {
         System.out.println("请输入原密码");
         String origin=scanner.next();
         System.out.println("请输入更改之后的密码");
-        boolean changePassword = new AdminServlet().ChangePassword(admin.getUsername(), origin, scanner.next());
+        boolean changePassword = AdminServlet.getInstance().ChangePassword(admin.getUsername(), origin, scanner.next());
         if(changePassword){
             System.out.println("更改成功");
         }else {
@@ -34,7 +34,7 @@ public class AdminView {
      * @param admin admin对象
      */
     public void audit(AdminEntity admin){
-        UserServlet userServlet = new UserServlet();
+        UserServlet userServlet = UserServlet.getInstance();
         List<UserEntity> userEntities = userServlet.showAuditUser();
         if(userEntities==null){
             System.out.println("没有需要审核的用户");
@@ -71,6 +71,6 @@ public class AdminView {
         int month=scanner.nextInt();
         System.out.println("请输入你想查看的报告的日期。例：28");
         int day=scanner.nextInt();
-        new AdminServlet().showReport(year,month,day);
+        AdminServlet.getInstance().showReport(year,month,day);
     }
 }

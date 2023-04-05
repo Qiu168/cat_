@@ -49,7 +49,7 @@ public class IndexView {
             return;
         }
         //传数据给后端
-        boolean register = new UserServlet().register(username, password, name, studentNumber, electromobileModel, electromobileNumber);
+        boolean register = UserServlet.getInstance().register(username, password, name, studentNumber, electromobileModel, electromobileNumber);
         if(register){
             System.out.println("注册成功");
             login();
@@ -60,7 +60,7 @@ public class IndexView {
     private void adminRegister(){
         System.out.println("请输入管理员密钥");
         String key = scanner.next();
-        AdminEntity admin = new AdminServlet().register(key);
+        AdminEntity admin = AdminServlet.getInstance().register(key);
         if(admin==null){
             System.out.println("注册失败");
         }else {
@@ -77,7 +77,7 @@ public class IndexView {
         String username = scanner.next();
         System.out.println("请输入密码");
         String password = scanner.next();
-        UserEntity user = new UserServlet().login(username, password);
+        UserEntity user = UserServlet.getInstance().login(username, password);
         if(user!=null){
             System.out.println("登录成功");
             new MenuView().studentMenu(user);
@@ -91,7 +91,7 @@ public class IndexView {
         String username = scanner.next();
         System.out.println("请输入密码");
         String password = scanner.next();
-        AdminEntity admin = new AdminServlet().login(username, password);
+        AdminEntity admin = AdminServlet.getInstance().login(username, password);
         if(admin!=null){
             System.out.println("登录成功");
             new MenuView().adminMenu(admin);

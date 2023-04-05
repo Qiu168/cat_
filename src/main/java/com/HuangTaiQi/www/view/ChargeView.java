@@ -2,6 +2,7 @@ package com.HuangTaiQi.www.view;
 
 import com.HuangTaiQi.www.controller.ChargeServlet;
 import com.HuangTaiQi.www.controller.CommentServlet;
+import com.HuangTaiQi.www.controller.UserServlet;
 import com.HuangTaiQi.www.po.*;
 import com.HuangTaiQi.www.utils.TextLog;
 
@@ -16,6 +17,7 @@ import java.util.logging.Logger;
 public class ChargeView {
     private final Logger logger=Logger.getLogger(MenuView.class.getName());
     private final Scanner scanner=new Scanner(System.in);
+    private final ChargeServlet chargeServlet=ChargeServlet.getInstance();
 
     /**
      * 在某一时间开始充电
@@ -24,19 +26,18 @@ public class ChargeView {
      * @param minute 开始的分钟
      */
     public void chargeAtTime(UserEntity user, int hour, int minute) {
-        ChargeServlet chargeServlet=new ChargeServlet();
         List<ChargingStationEntity> chargingStationEntities = chargeServlet.showChargingStation();
-        Map<Integer,ChargingStationEntity> map=new HashMap<>();
+        Map<Integer,ChargingStationEntity> stationMap=new HashMap<>();
         for (ChargingStationEntity chargingStationEntity : chargingStationEntities) {
-            System.out.println(chargingStationEntity);
-            map.put(chargingStationEntity.getId(),chargingStationEntity);
+            System.out.println(BaseView.showChargingStation(chargingStationEntity));
+            stationMap.put(chargingStationEntity.getId(),chargingStationEntity);
         }
         Map<Integer, ChargingPileBean> freePiles =new HashMap<>();
         //选择哪一个充电站。
         System.out.println("请输入你选择哪一个充电站");
         int stationId=scanner.nextInt();
-        if(map.containsKey(stationId)){
-            ChargingStationEntity chargingStation = map.get(stationId);
+        if(stationMap.containsKey(stationId)){
+            ChargingStationEntity chargingStation = stationMap.get(stationId);
             if(chargingStation.getOpen()>hour||chargingStation.getClose()<hour){
                 System.out.println("此时间充电站未开放");
                 System.out.println("此充电站的开放时间为"+chargingStation.getOpen()+"~"+chargingStation.getClose());
@@ -76,7 +77,6 @@ public class ChargeView {
      * 修改新增删除
      */
     public void showCharge(){
-        ChargeServlet chargeServlet = new ChargeServlet();
         List<Integer> stationIds = showChargingStation(chargeServlet);
         System.out.println("你接下来想做？1修改充电站信息，2删除充电站信息，3添加充电站，4查看/修改/删除充电站内的充电桩,5添加充电桩");
         switch (scanner.nextInt()){
@@ -110,7 +110,7 @@ public class ChargeView {
         List<Integer> stationIds =new ArrayList<>();
         //查看所有充电站
         for (ChargingStationEntity chargingStation : chargeServlet.showChargingStation()) {
-            System.out.println(chargingStation);
+            System.out.println(BaseView.showChargingStation(chargingStation));
             stationIds.add(chargingStation.getId());
         }
         return stationIds;
@@ -247,8 +247,7 @@ public class ChargeView {
      * @param user user
      */
     public void comment(UserEntity user) {
-        ChargeServlet chargeServlet = new ChargeServlet();
-        CommentServlet commentServlet = new CommentServlet();
+        CommentServlet commentServlet = CommentServlet.getInstance();
         System.out.println("你想查看/评论几号充电桩？");
         int pileId= scanner.nextInt();
         ChargingPileEntity pileById = chargeServlet.getPileById(pileId);
@@ -273,5 +272,15 @@ public class ChargeView {
                 System.out.println("添加成功");
             }
         }
+    }
+
+    /**
+     * 获取当前时间，将当前时间，如果还有后面的时间，设为空
+     * 将user的状态设为空闲
+     * @param user user
+     */
+    public void left(UserEntity user) {
+        UserServlet userServlet=UserServlet.getInstance();
+        userServlet.alterState(user.getId(), UserEntity.FREE);
     }
 }
