@@ -173,7 +173,11 @@ public class ChargeServiceImpl implements ChargeService {
 
     public List<ChargingPileBean> getFreePile(int stationId, int hour) throws Exception {
         List<ChargingPileBean> piles=new ArrayList<>();
-        for (ChargingPileEntity chargingPileEntity : chargeDao.getChargingPilesByStationId(stationId)) {
+        List<ChargingPileEntity> chargingPilesByStationId = chargeDao.getChargingPilesByStationId(stationId);
+        if(chargingPilesByStationId==null){
+            return null;
+        }
+        for (ChargingPileEntity chargingPileEntity : chargingPilesByStationId) {
             int freeTime = pileTime(hour, chargingPileEntity);
             if(freeTime>0){
                 ChargingPileBean chargingPileBean=new ChargingPileBean(chargingPileEntity);
