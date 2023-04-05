@@ -12,6 +12,14 @@ import java.util.List;
  */
 public class CommentServlet extends BaseServlet{
     CommentService commentService=new CommentServiceImpl();
+    private static CommentServlet instance;
+    private CommentServlet (){}
+    public static synchronized CommentServlet getInstance() {
+        if (instance == null) {
+            instance = new CommentServlet();
+        }
+        return instance;
+    }
     public List<CommentEntity> getComments(int pileId) {
         try {
             return commentService.getComments(pileId);

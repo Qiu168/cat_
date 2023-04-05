@@ -12,6 +12,14 @@ import java.util.List;
  * @author 14629
  */
 public class UserServlet extends BaseServlet{
+    private static UserServlet instance;
+    private UserServlet (){}
+    public static synchronized UserServlet getInstance() {
+        if (instance == null) {
+            instance = new UserServlet();
+        }
+        return instance;
+    }
     public boolean register(String username, String password, String name, String studentNumber, String electromobileModel, String electromobileNumber){
         //假装接受了前端的数据
         boolean isSuccess = false;
@@ -41,8 +49,8 @@ public class UserServlet extends BaseServlet{
 
     public void pass(int id) {
         try {
-            new UserServiceImpl().pass(id,UserEntity.FREE);
-        } catch (SQLException | InterruptedException e) {
+            new UserServiceImpl().setUserState(id,UserEntity.FREE);
+        } catch (SQLException  e) {
             handleException(UserServlet.class,e);
         }
     }
@@ -65,8 +73,8 @@ public class UserServlet extends BaseServlet{
             }
         }else {
             try {
-                new UserServiceImpl().pass(id,UserEntity.FORBID);
-            } catch (SQLException | InterruptedException e) {
+                new UserServiceImpl().setUserState(id,UserEntity.FORBID);
+            } catch (SQLException  e) {
                 handleException(UserServlet.class,e);
             }
         }

@@ -21,6 +21,7 @@ import java.util.UUID;
  */
 public class AdminServiceImpl implements AdminService {
     private final int usernameLength=8;
+    private final AdminDaoImpl adminDaoImpl = AdminDaoImpl.getInstance();
     /**
      * 新增管理员账号
      * @return 返回一个管理员对象
@@ -28,7 +29,6 @@ public class AdminServiceImpl implements AdminService {
      */
     public synchronized AdminEntity createAdminAccount() throws Exception {
         DBUtil.beginTransaction();
-        AdminDaoImpl adminDaoImpl = new AdminDaoImpl();
         Map<String, String> map = new HashMap<>();
         // 使用线程安全的 SecureRandom 生成随机数
         SecureRandom random = new SecureRandom();
@@ -64,7 +64,7 @@ public class AdminServiceImpl implements AdminService {
      * @throws Exception 异常
      */
     public AdminEntity login(String username, String password) throws Exception {
-        AdminEntity admin = new AdminDaoImpl().getAdminByUsernameAndPassword(username, Md5Utils.encode(password));
+        AdminEntity admin = adminDaoImpl.getAdminByUsernameAndPassword(username, Md5Utils.encode(password));
         DBUtil.close();
         return admin;
     }
@@ -81,7 +81,6 @@ public class AdminServiceImpl implements AdminService {
      */
     public boolean changePassword(String username, String origin, String next) throws Exception {
         DBUtil.beginTransaction();
-        AdminDaoImpl adminDaoImpl = new AdminDaoImpl();
         if(adminDaoImpl.getAdminByUsernameAndPassword(username,Md5Utils.encode(origin))!=null){
             try {
                 adminDaoImpl.changePassword(username,next);

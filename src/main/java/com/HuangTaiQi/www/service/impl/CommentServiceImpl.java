@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class CommentServiceImpl implements CommentService {
-    CommentDao commentDao=new CommentDaoImpl();
+    CommentDao commentDao=CommentDaoImpl.getInstance();
     @Override
     public List<CommentEntity> getComments(int pileId) throws Exception {
         List<CommentEntity> commentEntities =commentDao.getCommentsByPileId(pileId);
@@ -25,8 +25,8 @@ public class CommentServiceImpl implements CommentService {
     public static String searchChange(String word) {
         //定义敏感词汇库
         String[] arr = {"尼玛", "nnd", "NND", "TMD", "有病"};
-        for (int i = 0; i < arr.length; i++) {
-            word = word.replace(arr[i], "***");
+        for (String s : arr) {
+            word = word.replace(s, "***");
         }
         return word;
     }

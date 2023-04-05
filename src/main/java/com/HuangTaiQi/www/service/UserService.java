@@ -37,13 +37,13 @@ public interface UserService {
     public List<UserEntity> showAuditUser() throws Exception;
     /**
      * 将用户的状态设值。用于审核通过用户
-     * @param UserId 通过的用户id
+     * @param userId 通过的用户id
      * @param state 状态
      * @throws SQLException 异常
      * @throws InterruptedException 异常
      */
 
-    public void pass(int UserId, int state) throws SQLException, InterruptedException;
+    public void setUserState(int userId, int state) throws SQLException, InterruptedException;
     /**
      * 展示审核通过的用户
      * @return 返回审核通过的用户

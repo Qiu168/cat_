@@ -1,5 +1,6 @@
 package com.HuangTaiQi.www.dao.impl;
 
+import com.HuangTaiQi.www.controller.UserServlet;
 import com.HuangTaiQi.www.dao.AdminDao;
 import com.HuangTaiQi.www.po.AdminEntity;
 import com.HuangTaiQi.www.utils.DBUtil;
@@ -13,6 +14,15 @@ import java.util.List;
 public class AdminDaoImpl implements AdminDao {
     private final Connection connection = DBUtil.getConnection();;
     BaseDao baseDao=new BaseDao(connection);
+
+    private static AdminDaoImpl instance;
+    private AdminDaoImpl (){}
+    public static synchronized AdminDaoImpl getInstance() {
+        if (instance == null) {
+            instance = new AdminDaoImpl();
+        }
+        return instance;
+    }
     public AdminEntity selectByUsername(String username) throws Exception {
         String sql=new SQLBuilder("admin").select("*").where("username").buildSelect();
         List list = baseDao.selectByParams(sql, AdminEntity.class, username);

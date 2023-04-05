@@ -13,6 +13,15 @@ public class ParkDaoImpl implements ParkDao {
     private Connection connection= DBUtil.getConnection();
 
     BaseDao baseDao=new BaseDao(connection);
+
+    private static ParkDaoImpl instance;
+    private ParkDaoImpl (){}
+    public static synchronized ParkDaoImpl getInstance() {
+        if (instance == null) {
+            instance = new ParkDaoImpl();
+        }
+        return instance;
+    }
     public List<ParkingLotEntity> getParkLots() throws Exception {
         String sql="select * from parkinglot ";
         return baseDao.selectByParams(sql, ParkingLotEntity.class);

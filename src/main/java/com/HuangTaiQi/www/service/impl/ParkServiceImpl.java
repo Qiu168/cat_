@@ -14,6 +14,8 @@ import java.util.List;
  * @author 14629
  */
 public class ParkServiceImpl implements ParkService {
+    ParkDaoImpl parkDao=ParkDaoImpl.getInstance();
+
 
     /**
      * 获取所有的停车场
@@ -21,7 +23,7 @@ public class ParkServiceImpl implements ParkService {
      * @throws Exception 异常
      */
     public List<ParkingLotEntity> getParkingLots() throws Exception {
-        List<ParkingLotEntity> parkLots = new ParkDaoImpl().getParkLots();
+        List<ParkingLotEntity> parkLots = parkDao.getParkLots();
         DBUtil.close();
         return parkLots;
     }
@@ -36,7 +38,7 @@ public class ParkServiceImpl implements ParkService {
     public void addParkingLot(String location, String name) throws SQLException, InterruptedException {
         DBUtil.beginTransaction();
         try {
-            new ParkDaoImpl().addParkingLot(location,name);
+            parkDao.addParkingLot(location,name);
         } catch (SQLException | InterruptedException e) {
             DBUtil.rollbackTransaction();
             throw new RuntimeException(e);
@@ -52,7 +54,7 @@ public class ParkServiceImpl implements ParkService {
      * @throws Exception 异常
      */
     public List<ParkingSpotEntity> getParkingSpots(int lotId) throws Exception {
-        List<ParkingSpotEntity> parkSpots = new ParkDaoImpl().getParkSpots(lotId);
+        List<ParkingSpotEntity> parkSpots = parkDao.getParkSpots(lotId);
         DBUtil.close();
         return parkSpots;
 
@@ -66,7 +68,7 @@ public class ParkServiceImpl implements ParkService {
      */
 
     public void deleteSpot(int spotId) throws SQLException, InterruptedException {
-        new ParkDaoImpl().deleteSpot(spotId);
+        parkDao.deleteSpot(spotId);
         DBUtil.close();
     }
 
@@ -80,7 +82,7 @@ public class ParkServiceImpl implements ParkService {
     public void setSpotState(int spotId, int state) throws SQLException, InterruptedException {
         DBUtil.beginTransaction();
         try {
-            new ParkDaoImpl().setSpotState(spotId,state);
+            parkDao.setSpotState(spotId,state);
         } catch (SQLException | InterruptedException e) {
             DBUtil.rollbackTransaction();
             throw new RuntimeException(e);
@@ -97,10 +99,9 @@ public class ParkServiceImpl implements ParkService {
      */
     public void deleteLot(int lotId) throws SQLException, InterruptedException {
         DBUtil.beginTransaction();
-        ParkDaoImpl parkDaoImpl = new ParkDaoImpl();
         try {
-            parkDaoImpl.deleteSpotByLocationId(lotId);
-            parkDaoImpl.deleteLot(lotId);
+            parkDao.deleteSpotByLocationId(lotId);
+            parkDao.deleteLot(lotId);
         } catch (SQLException | InterruptedException e) {
             DBUtil.rollbackTransaction();
             throw new RuntimeException(e);
@@ -119,9 +120,8 @@ public class ParkServiceImpl implements ParkService {
      */
     public void alterLot(int lotId, String location, String name) throws SQLException, InterruptedException {
         DBUtil.beginTransaction();
-        ParkDaoImpl parkDaoImpl = new ParkDaoImpl();
         try {
-            parkDaoImpl.alterLot(lotId,location,name);
+            parkDao.alterLot(lotId,location,name);
         } catch (SQLException | InterruptedException e) {
             DBUtil.rollbackTransaction();
             throw new RuntimeException(e);
@@ -138,9 +138,8 @@ public class ParkServiceImpl implements ParkService {
      */
     public void addParkingSpot(int lotId) throws SQLException, InterruptedException {
         DBUtil.beginTransaction();
-        ParkDaoImpl parkDaoImpl = new ParkDaoImpl();
         try {
-            parkDaoImpl.addSpot(lotId);
+            parkDao.addSpot(lotId);
         } catch (SQLException | InterruptedException e) {
             DBUtil.rollbackTransaction();
             throw new RuntimeException(e);
@@ -160,7 +159,7 @@ public class ParkServiceImpl implements ParkService {
     public void setSpotStateByState(Integer userId, int state) throws SQLException, InterruptedException {
         DBUtil.beginTransaction();
         try {
-            new ParkDaoImpl().setSpotStateByState(userId,state);
+            parkDao.setSpotStateByState(userId,state);
         } catch (SQLException | InterruptedException e) {
             DBUtil.rollbackTransaction();
             throw new RuntimeException(e);

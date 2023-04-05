@@ -3,7 +3,9 @@ package com.HuangTaiQi.www.controller;
 import com.HuangTaiQi.www.po.ChargingPileBean;
 import com.HuangTaiQi.www.po.ChargingPileEntity;
 import com.HuangTaiQi.www.po.ChargingStationEntity;
+import com.HuangTaiQi.www.po.UserEntity;
 import com.HuangTaiQi.www.service.impl.ChargeServiceImpl;
+import com.HuangTaiQi.www.service.impl.UserServiceImpl;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -13,6 +15,14 @@ import java.util.List;
  */
 public class ChargeServlet extends BaseServlet{
     ChargeServiceImpl chargeServiceImpl =new ChargeServiceImpl();
+    private static ChargeServlet instance;
+    private ChargeServlet (){}
+    public static synchronized ChargeServlet getInstance() {
+        if (instance == null) {
+            instance = new ChargeServlet();
+        }
+        return instance;
+    }
     public List<ChargingStationEntity> showChargingStation() {
         try {
             return new ChargeServiceImpl().getChargingStations();
@@ -96,6 +106,7 @@ public class ChargeServlet extends BaseServlet{
 
     public boolean usePile(Integer id, ChargingPileBean pile, int hour, int useTime) {
         try {
+            new UserServiceImpl().setUserState(id, UserEntity.CHARGING);
             return chargeServiceImpl.setPileTime(id,pile,hour,useTime);
         } catch (Exception e) {
             handleException(ChargeServlet.class,e);

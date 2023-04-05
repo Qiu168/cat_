@@ -16,6 +16,15 @@ public class ChargeDaoImpl implements ChargeDao {
 
     static BaseDao baseDao=new BaseDao(connection);
 
+    private static ChargeDaoImpl instance;
+    private ChargeDaoImpl (){}
+    public static synchronized ChargeDaoImpl getInstance() {
+        if (instance == null) {
+            instance = new ChargeDaoImpl();
+        }
+        return instance;
+    }
+
     public List<ChargingStationEntity> getChargingStations() throws Exception {
         String sql=new SQLBuilder("chargingstation").select("*").buildSelect();
         return baseDao.selectByParams(sql, ChargingStationEntity.class);
