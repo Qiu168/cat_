@@ -11,6 +11,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * 管路充电
+ * @author 14629
+ */
 public class ChargeDaoImpl implements ChargeDao {
     private static final Connection connection= DBUtil.getConnection();
 
